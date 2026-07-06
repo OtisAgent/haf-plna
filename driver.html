@@ -1,0 +1,182 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>PLNA — Driver Dashboard</title><style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0F172A;--panel:#1E293B;--panel2:#263347;--line:#334155;--orange:#F97316;--green:#22C55E;--red:#EF4444;--amber:#F59E0B;--blue:#3B82F6;--purple:#8B5CF6;--text:#F1F5F9;--muted:#94A3B8;--sub:#64748B;--r:12px;--rsm:8px}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Inter','Segoe UI',sans-serif;display:flex;flex-direction:column;height:100vh;overflow:hidden}
+.topbar{background:var(--panel);border-bottom:1px solid var(--line);padding:0 24px;height:52px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.topbar-left{display:flex;align-items:center;gap:8px;font-weight:700;font-size:15px}
+.topbar-left span{color:var(--sub)}
+.topbar-left b{color:var(--orange)}
+.topbar-right{display:flex;align-items:center;gap:14px}
+.vchip{background:var(--panel2);color:var(--orange);border:1px solid var(--line);border-radius:6px;padding:3px 10px;font-size:12px;font-weight:700}
+.back{color:var(--muted);font-size:13px;text-decoration:none}
+.back:hover{color:var(--orange)}
+.layout{display:flex;flex:1;overflow:hidden}
+.sidebar{width:220px;background:var(--panel);border-right:1px solid var(--line);display:flex;flex-direction:column;flex-shrink:0;overflow-y:auto}
+.acct-box{padding:18px 16px;border-bottom:1px solid var(--line)}
+.avatar{width:44px;height:44px;border-radius:50%;background:var(--orange);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:16px;color:#fff;margin-bottom:10px}
+.acct-name{font-weight:700;font-size:14px}
+.acct-id{color:var(--sub);font-size:12px;margin-top:2px}
+.badge{display:inline-block;background:#1a3a2a;color:var(--green);border:1px solid #22c55e44;border-radius:5px;padding:2px 8px;font-size:11px;font-weight:700;margin-top:6px}
+.dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--green);margin-right:5px}
+.nav{padding:12px 8px;flex:1}
+.nb{width:100%;background:none;border:none;color:var(--muted);text-align:left;padding:9px 12px;border-radius:8px;font-size:13px;font-weight:500;cursor:pointer;border-left:3px solid transparent;margin-bottom:2px}
+.nb:hover{background:var(--panel2);color:var(--text)}
+.nb.active{border-left-color:var(--orange);color:var(--orange);background:var(--panel2)}
+.main{flex:1;overflow-y:auto;padding:24px}
+.panel{display:none}.panel.active{display:block}
+h2{font-size:18px;font-weight:700;margin-bottom:16px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:18px;margin-bottom:14px}
+.job-time{font-size:12px;color:var(--sub);margin-bottom:6px;font-weight:600;letter-spacing:.5px}
+.job-route{font-size:15px;font-weight:700;margin-bottom:4px}
+.job-detail{font-size:13px;color:var(--muted)}
+.status-chip{display:inline-block;border-radius:5px;padding:2px 9px;font-size:11px;font-weight:700;margin-top:8px}
+.s-amber{background:#3a2a0a;color:var(--amber);border:1px solid #f59e0b44}
+.s-blue{background:#0a1a3a;color:var(--blue);border:1px solid #3b82f644}
+.s-green{background:#0a2a1a;color:var(--green);border:1px solid #22c55e44}
+.earn-bar{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:16px;display:flex;gap:24px;margin-bottom:20px}
+.earn-item label{font-size:11px;color:var(--sub);display:block;margin-bottom:4px;font-weight:600;letter-spacing:.5px;text-transform:uppercase}
+.earn-item .val{font-size:20px;font-weight:800;color:var(--orange)}
+.earn-item .val.sm{font-size:15px;color:var(--text)}
+.route-card{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:18px;margin-bottom:14px}
+.route-title{font-weight:700;font-size:16px;margin-bottom:8px}
+.route-meta{display:flex;gap:20px;margin-bottom:6px}
+.route-meta span{font-size:13px;color:var(--muted)}
+.route-meta b{color:var(--text)}
+.match-card{background:var(--panel2);border:1px solid var(--orange);border-radius:var(--r);padding:16px}
+.match-title{font-size:13px;font-weight:700;color:var(--orange);margin-bottom:8px}
+.match-detail{font-size:13px;color:var(--muted);margin-bottom:12px}
+.btn{background:var(--orange);color:#fff;border:none;border-radius:8px;padding:8px 18px;font-size:13px;font-weight:700;cursor:pointer}
+.btn:hover{background:#EA6C0A}
+.btn-outline{background:none;color:var(--muted);border:1px solid var(--line);border-radius:8px;padding:8px 18px;font-size:13px;font-weight:600;cursor:pointer;margin-left:8px}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{text-align:left;color:var(--sub);font-size:11px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;padding:8px 12px;border-bottom:1px solid var(--line)}
+td{padding:10px 12px;border-bottom:1px solid #1e293b88;color:var(--text)}
+tr:last-child td{border-bottom:none}
+.stat-row{display:flex;gap:14px;margin-bottom:20px}
+.stat-card{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:16px;flex:1}
+.stat-card label{font-size:11px;color:var(--sub);display:block;margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px;font-weight:600}
+.stat-card .val{font-size:22px;font-weight:800;color:var(--orange)}
+.comp-row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--line)}
+.comp-row:last-child{border-bottom:none}
+.comp-label{font-size:14px;font-weight:600}
+.comp-sub{font-size:12px;color:var(--sub);margin-top:2px}
+.comp-status{font-size:13px;font-weight:700}
+.cs-green{color:var(--green)}
+</style></head><body>
+<div class="topbar">
+<div class="topbar-left"><b>HAF PLNA</b><span>/</span><span id="tabtitle">Today</span></div>
+<div class="topbar-right"><span class="vchip">v3.0</span><a class="back" href="index.html">← Back to demo</a></div>
+</div>
+<div class="layout">
+<div class="sidebar">
+<div class="acct-box">
+<div class="avatar">JT</div>
+<div class="acct-name">Jake Thornton</div>
+<div class="acct-id">DF063893</div>
+<div class="badge"><span class="dot"></span>Pro Plan · Active</div>
+</div>
+<div class="nav">
+<button class="nb active" onclick="show('today','Today',this)">Today</button>
+<button class="nb" onclick="show('route','Route Planner',this)">Route Planner</button>
+<button class="nb" onclick="show('jobs','My Jobs',this)">My Jobs</button>
+<button class="nb" onclick="show('earn','Earnings',this)">Earnings</button>
+<button class="nb" onclick="show('comp','Compliance',this)">Compliance</button>
+</div>
+</div>
+<div class="main">
+<div id="today" class="panel active">
+<h2>Today's Schedule</h2>
+<div class="card">
+<div class="job-time">09:00</div>
+<div class="job-route">Birmingham B1 1BB → Coventry CV1 2AA</div>
+ <div class="job-detail">Hartley Tools Ltd — 4 boxes</div>
+<div class="status-chip s-amber">In Progress</div>
+</div>
+<div class="card">
+<div class="job-time">14:30</div>
+<div class="job-route">Coventry CV1 2AA → Leicester LE1 7AB</div>
+ <div class="job-detail">RetailCore Ltd — 2 pallets</div>
+ <div class="status-chip s-blue">Scheduled</div>
+</div>
+<div class="earn-bar">
+<div class="earn-item"><label>Today</label><div class="val">£320</div></div>
+<div class="earn-item"><label>This Week</label><div class="val">£1,240</div></div>
+<div class="earn-item"><label>Next Payout</label><div class="val sm">9 Jul via CleverPay</div></div>
+</div>
+</div>
+<div id="route" class="panel">
+<h2>Route Planner</h2>
+<div class="route-card">
+<div class="route-title">Birmingham → Sheffield</div>
+<div class="route-meta"><span>Via <b>M1</b></span><span><b>92 miles</b></span><span>Est. <b>1h 45m</b></span></div>
+<div class="status-chip s-amber">Active Route</div>
+</div>
+<div class="match-card">
+<div class="match-title">Return Load Available</div>
+ <div class="match-detail">Sheffield → Birmingham · 3 pallets · Offered: <b style="color:#F1F5F9">£280</b></div>
+<button class="btn">Accept</button><button class="btn-outline">Decline</button>
+</div>
+</div>
+<div id="jobs" class="panel">
+<h2>My Jobs</h2>
+<div class="card" style="padding:0;overflow:hidden">
+<table>
+<tr><th>Date</th><th>Customer</th><th>Route</th><th>Dist</th><th>Pay</th><th>Status</th></tr>
+<tr><td>07 Jul</td><td>Hartley Tools</td><td>Bham → Cov</td><td>34mi</td><td>£180</td><td><span class="status-chip s-blue">Scheduled</span></td></tr>
+<tr><td>06 Jul</td><td>RetailCore</td><td>Cov → Leicester</td><td>24mi</td><td>£140</td><td><span class="status-chip s-green">Completed</span></td></tr>
+<tr><td>05 Jul</td><td>Global Freight Co</td><td>Bham → Leeds</td><td>112mi</td><td>£380</td><td><span class="status-chip s-green">Completed</span></td></tr>
+</table>
+</div>
+</div>
+<div id="earn" class="panel">
+<h2>Earnings</h2>
+<div class="stat-row">
+<div class="stat-card"><label>This Week</label><div class="val">£1,240</div></div>
+<div class="stat-card"><label>Month to Date</label><div class="val">£3,_�m0</div></div>
+<div class="stat-card"><label>Next CleverPay</label><div class="val" style="font-size:15px;color:var(--text)">9 Jul · £1,240</div></div>
+</div>
+<div class="card" style="padding:0;overflow:hidden">
+<table>
+<tr><th>Date</th><th>
+				Reference</th><th>Amount</th><th>Status</th></tr>
+<tr><td>25 Jun</td><td>CPY-2506-001</td><td>£1,180</td><td><span class="status-chip s-green">Paid</span></td></tr>
+<tr><td>18 Jun</td><td>CPY-2506-002</td><td>£940</td><td><span class="status-chip s-green">Paid</span></td></tr>
+<tr><td>11 Jun</td><td>CPY-2106-003</td><td>£1,060</td><td><span class="status-chip s-green">Paid</span></td></tr>
+</table>
+</div>
+</div>
+<div id="comp" class="panel">
+<h2>Compliance</h2>
+<div class="card">
+<div class="comp-row">
+<div><div class="comp-label">Driving Licence</div><div class="comp-sub">Full UK · Expires 2028-11-30</div></div>
+<div class="comp-status cs-green">Active ✓</div>
+</div>
+<div class="comp-row">
+<div><div class="comp-label">Insurance</div><div class="comp-sub">Commercial Vehicle · Expires 2027-03-15</div></div>
+<div class="comp-status cs-green">Active ✓</div>
+</div>
+<div class="comp-row">
+<div><div class="comp-label">CleverPay Status</div><div class="comp-sub">Bank verified · Payments enabled</div></div>
+<div class="comp-status cs-green">Active ✓</div>
+</div>
+<div class="comp-row">
+<div><div class="comp-label">OTIS DBS Check</div><div class="comp-sub">Enhanced · Completed 2024-01-10</div></div>
+<div class="comp-status cs-green">Cleared ✓</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<script>
+function show(id,label,btn){
+var panels=document.querySelectorAll('.panel');
+for(var i=0;i<panels.length;i++)panels[i].classList.remove('active');
+document.getElementById(id).classList.add('active');
+document.getElementById('tabtitle').textContent=label;
+var btns=document.querySelectorAll('.nb');
+for(var j=0;j<btns.length;j++)btns[j].classList.remove('active');
+btn.classList.add('active');
+}
+</script>
+</body></html>
