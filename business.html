@@ -1,0 +1,173 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>PLNA — Business Dashboard</title><style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0F172A;--panel:#1E293B;--panel2:#263347;--line:#334155;--orange:#F97316;--green:#22C55E;--red:#EF4444;--amber:#F59E0B;--blue:#3B82F6;--purple:#8B5CF6;--text:#F1F5F9;--muted:#94A3B8;--sub:#64748B;--r:12px}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Inter','Segoe UI',sans-serif;display:flex;flex-direction:column;height:100vh;overflow:hidden}
+.topbar{background:var(--panel);border-bottom:1px solid var(--line);padding:0 24px;height:52px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.topbar-left{display:flex;align-items:center;gap:8px;font-weight:700;font-size:15px}
+.topbar-left span{color:var(--sub)}.topbar-left b{color:var(--orange)}
+.topbar-right{display:flex;align-items:center;gap:14px}
+.vchip{background:var(--panel2);color:var(--orange);border:1px solid var(--line);border-radius:6px;padding:3px 10px;font-size:12px;font-weight:700}
+.back{color:var(--muted);font-size:13px;text-decoration:none}.back:hover{color:var(--orange)}
+.layout{display:flex;flex:1;overflow:hidden}
+.sidebar{width:220px;background:var(--panel);border-right:1px solid var(--line);display:flex;flex-direction:column;flex-shrink:0}
+.acct-box{padding:18px 16px;border-bottom:1px solid var(--line)}
+.avatar{width:44px;height:44px;border-radius:50%;background:var(--blue);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:16px;color:#fff;margin-bottom:10px}
+.acct-name{font-weight:700;font-size:14px}.acct-company{color:var(--muted);font-size:12px;margin-top:1px}.acct-id{color:var(--sub);font-size:12px}
+.badge{display:inline-block;background:#0a1a3a;color:var(--blue);border:1px solid #3b82f644;border-radius:5px;padding:2px 8px;font-size:11px;font-weight:700;margin-top:6px}
+.dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--blue);margin-right:5px}
+.nav{padding:12px 8px}
+.nb{width:100%;background:none;border:none;color:var(--muted);text-align:left;padding:9px 12px;border-radius:8px;font-size:13px;font-weight:500;cursor:pointer;border-left:3px solid transparent;margin-bottom:2px}
+.nb:hover{background:var(--panel2);color:var(--text)}.nb.active{border-left-color:var(--orange);color:var(--orange);background:var(--panel2)}
+.main{flex:1;overflow-y:auto;padding:24px}
+.panel{display:none}.panel.active{display:block}
+h2{font-size:18px;font-weight:700;margin-bottom:16px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:18px;margin-bottom:14px}
+.stat-row{display:flex;gap:14px;margin-bottom:20px}
+.stat-card{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:16px;flex:1}
+.stat-card label{font-size:11px;color:var(--sub);display:block;margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px;font-weight:600}
+.stat-card .val{font-size:22px;font-weight:800;color:var(--orange)}
+.status-chip{display:inline-block;border-radius:5px;padding:2px 9px;font-size:11px;font-weight:700}
+.s-green{background:#0a2a1a;color:var(--green);border:1px solid #22c55e44}
+.s-amber{background:#3a2a0a;color:var(--amber);border:1px solid #f59e0b44}
+.s-blue{background:#0a1a3a;color:var(--blue);border:1px solid #3b82f644}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{text-align:left;color:var(--sub);font-size:11px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;padding:8px 12px;border-bottom:1px solid var(--line)}
+td{padding:10px 12px;border-bottom:1px solid #1e293b88;color:var(--text)}
+tr:last-child td{border-bottom:none}
+.tier-card{background:var(--panel2);border:1px solid var(--blue);border-radius:var(--r);padding:16px;margin-bottom:14px}
+.tier-title{font-size:14px;font-weight:700;color:var(--blue);margin-bottom:4px}
+.tier-desc{font-size:13px;color:var(--muted)}
+label.fl{display:block;font-size:12px;font-weight:600;color:var(--sub);margin-bottom:5px;margin-top:12px;text-transform:uppercase;letter-spacing:.4px}
+label.fl:first-child{margin-top:0}
+input,select{width:100%;background:var(--panel2);border:1px solid var(--line);border-radius:8px;color:var(--text);padding:9px 12px;font-size:13px;outline:none}
+input:focus,select:focus{border-color:var(--orange)}
+.btn{background:var(--orange);color:#fff;border:none;border-radius:8px;padding:10px 20px;font-size:14px;font-weight:700;cursor:pointer;margin-top:14px}
+.btn:hover{background:#EA6C0A}
+.quote-card{background:var(--panel2);border:1px solid var(--orange);border-radius:var(--r);padding:16px;margin-top:14px}
+.quote-price{font-size:28px;font-weight:800;color:var(--orange)}
+.quote-note{font-size:12px;color:var(--muted);margin-top:4px;margin-bottom:12px}
+.btn-sm{background:var(--orange);color:#fff;border:none;border-radius:6px;padding:7px 16px;font-size:12px;font-weight:700;cursor:pointer}
+.rate-row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--line);font-size:13px}
+.rate-row:last-child{border-bottom:none}
+.rate-label{color:var(--muted)}.rate-val{font-weight:700}
+.next-tier{background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:12px;margin-top:14px;font-size:13px;color:var(--muted)}
+.next-tier b{color:var(--text)}
+</style></head><body>
+<div class="topbar">
+<div class="topbar-left"><b>HAF PLNA</b><span>/</span><span id="tabtitle">Dashboard</span></div>
+<div class="topbar-right"><span class="vchip">v3.0</span><a class="back" href="index.html">← Back to demo</a></div>
+</div>
+<div class="layout">
+<div class="sidebar">
+<div class="acct-box">
+<div class="avatar">JH</div>
+<div class="acct-name">James Hartley</div>
+<div class="acct-company">Hartley Tools Ltd</div>
+<div class="acct-id">ACC-BT1290</div>
+ <div class="badge"><span class="dot"></span>Business Verified</div>
+</div>
+<div class="nav">
+<button class="nb active" onclick="show('dash','Dashboard',this)">Dashboard</button>
+<button class="nb" onclick="show('book','Book Delivery', this)">Book Delivery</button>
+<button class="nb" onclick="show('delivs','My Deliveries',this)">My Deliveries</button>
+<button class="nb" onclick="show('pricing','Network Pricing',this)">Network Pricing</button>
+<button class="nb" onclick="show('pay','Payments',this)">Payments</button>
+</div>
+</div>
+<div class="main">
+<div id="dash" class="panel active">
+<h2>Dashboard</h2>
+<div class="stat-row">
+<div class="stat-card"><label>Deliveries This Month</label><div class="val">12</div></div>
+<div class="stat-card"><label>Total Spend</label><div class="val">£1,240</div></div>
+<div class="stat-card"><label>Saved vs Standard</label><div class="val" style="color:var(--green)">£186</div></div>
+</div>
+<div class="tier-card">
+<div class="tier-title">Business Verified</div>
+<div class="tier-desc">15% rebate on own goods deliveries · Up to £2,000/mo spend tier</div>
+</div>
+<div class="card" style="padding:0;overflow:hidden">
+<table>
+<tr><th>Date</th><th>Route</th><th>Value</th><th>Status</th></tr>
+<tr><td>06 Jul</td><td>Bham → Coventry</td><td>£142</td><td><span class="status-chip s-amber">In Transit</span></td></tr>
+<tr><td>04 Jul</td><td>Coventry → Leicester</td><td>£98</td><td><span class="status-chip s-green">Delivered</span></td></tr>
+<tr><td>01 Jul</td><td>Bham → Sheffield</td><td>£214</td><td><span class="status-chip s-green">Delivered</span></td></tr>
+</table>
+</div>
+</div>
+<div id="book" class="panel">
+<h2>Book a Delivery</h2>
+<div class="card">
+<label class="fl">Collection Postcode</label>
+<input type="text" value="B1 1BB">
+<label class="fl">Delivery Postcode</label>
+<input type="text" placeholder="e.g. CV1 2AA">
+<label class="fl">Item Type</label>
+<select><option>General</option><option>Fragile</option><option>Pallet</option><option>Oversize</option></select>
+<label class="fl">Weight (kg)</label>
+<input type="number" placeholder="e.g. 50">
+<button class="btn" onclick="document.getElementById('qc').style.display='block'">Get Quote →</button>
+</div>
+<div class="quote-card" id="qc" style="display:none">
+<div class="quote-price">£142</div>
+<div class="quote-note">Includes 15% Business Verified rebate · Estimated delivery same day</div>
+<button class="btn-sm">Confirm Booking</button>
+</div>
+</div>
+<div id="delivs" class="panel">
+<h2>My Deliveries</h2>
+<div class="card" style="padding:0;overflow:hidden">
+<table>
+<tr><th>Date</th><th>Route</th><th>Items</th><th>Value</th><th>Status</th></tr>
+<tr><td>06 Jul</td><td>Bham → Coventry</td><td>4 boxes</td><td>£142</td><td><span class="status-chip s-amber">In Transit</span></td></tr>
+<tr><td>05 Jul</td><td>Cov → Leicester</td><td>2 pallets</td><td>£168</td><td><span class="status-chip s-blue">Scheduled</span></td></tr>
+<tr><td>04 Jul</td><td>Bham → Derby</td><td>General</td><td>£98</td><td><span class="status-chip s-green">Delivered</span></td></tr>
+<tr><td>02 Jul</td><td>Leicester → Bham</td><td>Oversize</td><td>£214</td><td><span class="status-chip s-green">Delivered</span></td></tr>
+<tr><td>30 Jun</td><td>Bham → Sheffield</td><td>3 boxes</td><td>£186</td><td><span class="status-chip s-green">Delivered</span></td></tr>
+</table>
+</div>
+</div>
+<div id="pricing" class="panel">
+<h2>Network Pricing</h2>
+<div class="tier-card">
+<div class="tier-title">Current Tier: Business Verified</div>
+<div class="tier-desc" style="margin-top:6px">Spend band: £0 – £2,000 / month · 15% rebate on own goods</div>
+</div>
+<div class="card">
+<div class="rate-row"><span class="rate-label">Standard Item (up to 30kg)</span><span class="rate-val">£8.50</span></div>
+<div class="rate-row"><span class="rate-label">Pallet (up to 500kg)</span><span class="rate-val">£24.00</span></div>
+<div class="rate-row"><span class="rate-label">Oversize / Awkward</span><span class="rate-val">£62.00</span></div>
+</div>
+<div class="next-tier">Next tier unlock: <b>Business Partner</b> at <b>£3,000/mo spend</b> — additional 5% rebate + priority matching</div>
+</div>
+<div id="pay" class="panel">
+<h2>Payments</h2>
+<div class="card">
+<div style="font-size:13px;color:var(--sub);margin-bottom:4px;font-weight:600;text-transform:uppercase;letter-spacing:.5px">Next Invoice</div>
+<div style="font-size:28px;font-weight:800;color:var(--orange)">£420</div>
+<div style="font-size:13px;color:var(--muted);margin-top:4px">Due 14 Jul 2026 · Auto-collect via DD</div>
+</div>
+<div class="card" style="padding:0;overflow:hidden">
+<table>
+<tr><th>Invoice</th><th>Date</th><th>Amount</th><th>Status</th></tr>
+<tr><td>INV-2626-06</td><td>30 Jun</td><td>£1,240</td><td><span class="status-chip s-green">Paid</span></td></tr>
+<tr><td>INV-2626-05</td><td>31 May</td><td>£980</td><td><span class="status-chip s-green">Paid</span></td></tr>
+<tr><td>INV-2626-04</td><td>30 Apr</td><td>£1,140</td><td><span class="status-chip s-green">Paid</span></td></tr>
+</table>
+</div>
+</div>
+</div>
+</div>
+</div>
+<script>
+function show(id,label,btn){
+var panels=document.querySelectorAll('.panel');
+for(var i=0;i<panels.length;i++)panels[i].classList.remove('active');
+document.getElementById(id).classList.add('active');
+document.getElementById('tabtitle').textContent=label;
+var btns=document.querySelectorAll('.nb');
+for(var j=0;j<btns.length;j++)btns[j].classList.remove('active');
+btn.classList.add('active');
+}
+</script>
+</body></html>
