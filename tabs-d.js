@@ -83,7 +83,7 @@ document.getElementById('tab-comms').innerHTML = `
                 <div class="msg-from">HAF System</div>
                 <div class="msg-preview">Your PLNA Pro plan renews on 1 Aug 2026. No action needed &mdash; auto-renewal active.</div>
               </div>
-              <div class="msg-time">Yesterday</div>
+              <div class="msg-time">Ysterday</div>
             </div>
             <div class="msg-item">
               <div class="msg-av orange">H</div>
@@ -91,10 +91,10 @@ document.getElementById('tab-comms').innerHTML = `
                 <div class="msg-from">HAF Dispatch</div>
                 <div class="msg-preview">Return-route opportunity: LS1 &rarr; B2 area, tomorrow 14:00. 96 mi, £88.00.</div>
               </div>
-              <div class="msg-time">Yesterday</div>
+              <div class="msg-time">Ysterday</div>
             </div>
             <div class="msg-item">
-              <div class="msg-av">C</div>
+              <div class="msg-av orange">H</div>
               <div class="msg-body">
                 <div class="msg-from">CleverCheck</div>
                 <div class="msg-preview">Action required: your vehicle insurance expires 31 Jul 2026. Please upload updated cert.</div>
@@ -103,6 +103,7 @@ document.getElementById('tab-comms').innerHTML = `
             </div>
           </div>
         </div>
+
 `;
 document.getElementById('tab-billing').innerHTML = `
         <div id="tab-billing" style="display:none">
@@ -110,13 +111,11 @@ document.getElementById('tab-billing').innerHTML = `
             <h2>Plans &amp; Billing</h2>
             <p>Free on the fly, or the full planning toolkit. Pay monthly or save with a year up front.</p>
           </div>
-
           <div class="billing-toggle">
             <span class="billing-period active" onclick="setBillingPeriod('monthly')">Monthly</span>
             <button class="billing-toggle-track" id="billingToggle" onclick="toggleBilling()"><span class="knob"></span></button>
             <span class="billing-period" id="annualLabel" onclick="setBillingPeriod('annual')">Annual <span class="billing-save-pill">SAVE 15%</span></span>
           </div>
-
           <div class="plan-grid" style="grid-template-columns:1fr 1fr 1fr;max-width:900px">
             <div class="plan-card">
               <div class="plan-name">PLNA Lite</div>
@@ -134,7 +133,6 @@ document.getElementById('tab-billing').innerHTML = `
               </ul>
               <button class="btn btn-ghost" style="width:100%;justify-content:center">Choose Lite</button>
             </div>
-
             <div class="plan-card">
               <div class="plan-name">PLNA Plus</div>
               <div class="plan-price">
@@ -151,7 +149,6 @@ document.getElementById('tab-billing').innerHTML = `
               </ul>
               <button class="btn btn-ghost" style="width:100%;justify-content:center">Choose Plus</button>
             </div>
-
             <div class="plan-card pro">
               <div class="plan-name">PLNA Pro</div>
               <div class="plan-price">
@@ -171,10 +168,8 @@ document.getElementById('tab-billing').innerHTML = `
               <button class="btn" style="width:100%;justify-content:center">Manage billing</button>
             </div>
           </div>
-
           <div class="billing-note">Framework preview &mdash; prices are placeholder / pending confirmation.</div>
         </div>
-
       </div>
     </div>
   </div>
