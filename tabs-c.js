@@ -52,7 +52,6 @@ document.getElementById('tab-money').innerHTML = `
           </div>
           <div style="font-size:11.5px;color:var(--muted);line-height:1.6">HAF network fee is 10% of the gross job rate. Deducted before CleverPay settlement. Your net figure is what lands in your account.</div>
         </div>
-
 `;
 document.getElementById('tab-reports').innerHTML = `
         <!-- REPORTS & ANALYTICS -->
@@ -122,4 +121,35 @@ document.getElementById('tab-reports').innerHTML = `
         </div>
 
 `;
-document.getElementById('tab-ai')
+document.getElementById('tab-ai').innerHTML = `
+        <!-- JUDD AI -->
+        <div id="tab-ai" style="display:none">
+          <div class="greet"><h2>JUDD AI</h2><div class="greet-sub">Your AI planning assistant &mdash; PLNA Pro</div></div>
+          <div class="placeholder"><h3>JUDD AI</h3>Route optimisation, earnings forecasting, backload suggestions and job prioritisation. Available on PLNA Pro.</div>
+        </div>
+
+`;
+document.getElementById('tab-landing').innerHTML = `
+        <!-- DRIVER LANDING PAGE -->
+        <div id="tab-landing" style="display:none">
+          <div class="greet"><h2>Driver Landing Page</h2><div class="greet-sub">Your public profile &mdash; visible to shippers on HAF KNECT</div></div>
+          <div class="placeholder"><h3>Driver Landing Page</h3>Your public-facing profile showing vehicle type, area, CleverCheck status and availability. Shippers can request you directly.</div>
+        </div>
+
+`;
+document.getElementById('tab-rewards').innerHTML = `
+        <!-- MY REWARDS -->
+        <div id="tab-rewards" style="display:none">
+          <div class="greet"><h2>My Rewards</h2><div class="greet-sub">HAF points, referrals and perks</div></div>
+          <div class="placeholder"><h3>My Rewards</h3>Earn HAF points for every completed delivery. Redeem against your PLNA plan or HAF Shop products. Refer drivers to earn bonus points.</div>
+        </div>
+
+`;
+document.getElementById('tab-pass').innerHTML = `
+        <!-- NETWORK PASS -->
+        <div id="tab-pass" style="display:none">
+          <div class="greet"><h2>Network Pass</h2><div class="greet-sub">Multi-carrier access &mdash; PLNA Pro</div></div>
+          <div class="placeholder"><h3>Network Pass</h3>Your digital pass for access across the HAF network and connected carrier partners. Managed through your HAF username and CleverCheck approval.</div>
+        </div>
+
+`;
