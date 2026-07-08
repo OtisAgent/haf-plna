@@ -1,0 +1,160 @@
+name: Wire booking integration to driver login
+on:
+  workflow_dispatch:
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v3
+      - name: Apply integration changes
+        run: |
+          python3 << 'PYEOF'
+          import os
+
+          # ── LOGIN: replace dummy auth with Supabase-wired auth ──
+          with open('login.html', 'r') as f:
+              c = f.read()
+
+          c = c.replace(
+              "/* ── SIGN IN ── */\n// Seed credentials — any password works with JW012390 in this preview\nfunction doLogin(){",
+              "/* ── SUPABASE ── */\nconst SUPA_URL='https://ggkpqqrtxtlafdkxcaqg.supabase.co';\nconst SUPA_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imdna3BxcXJ0eHRsYWZka3hjYXFnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIxOTM2NjAsImV4cCI6MjA5Nzc2OTY2MH0.hB70KOYZu4dshwhsrxF_dFyBn0n72gStWTwxYGsLdgY';\nasync function sha256(str){const buf=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(str));return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');}\n\n/* ── SIGN IN ── */\nasync function doLogin(){"
+          )
+
+          c = c.replace(
+              "  // Seed: accept JW012390 or any 8+ char username + any non-empty password\n  if(u.length<6){err.textContent='Username format: 2 initials + last 4 of phone + last 2 of birth year (e.g. JW012390)';err.classList.add('show');return;}\n  err.classList.remove('show');\n  localStorage.setItem('plna-user',u);\n  localStorage.setItem('plna-auth','1');\n  window.location.href='dashboard.html';\n}",
+              "  if(u.length<6){err.textContent='Username format: 2 initials + last 4 of phone + last 2 of birth year (e.g. JW012390)';err.classList.add('show');return;}\n  err.classList.remove('show');\n  const btn=document.querySelector('#view-login .btn-full');\n  btn.textContent='Signing in…';btn.disabled=true;\n  try{\n    const hash=await sha256(p);\n    const res=await fetch(`${SUPA_URL}/rest/v1/plna_drivers?haf_username=eq.${encodeURIComponent(u)}&password_hash=eq.${encodeURIComponent(hash)}&select=*`,{headers:{'apikey':SUPA_KEY,'Authorization':'Bearer '+SUPA_KEY}});\n    const data=await res.json();\n    if(!Array.isArray(data)||!data.length){err.textContent='Incorrect username or password. Try again.';err.classList.add('show');btn.textContent='Sign in';btn.disabled=false;return;}\n    const driver=data[0];\n    localStorage.setItem('plna-user',driver.haf_username);\n    localStorage.setItem('plna-profile',JSON.stringify(driver));\n    localStorage.setItem('plna-auth','1');\n    window.location.href='dashboard.html';\n  }catch(e){err.textContent='Connection error. Please try again.';err.classList.add('show');btn.textContent='Sign in';btn.disabled=false;}\n}"
+          )
+
+          c = c.replace(
+              "/* ── REGISTER ── */\nfunction doRegister(){",
+              "/* ── REGISTER ── */\nasync function doRegister(){"
+          )
+
+          c = c.replace(
+              "  err.classList.remove('show');\n  localStorage.setItem('plna-user',clever);\n  localStorage.setItem('plna-auth','1');\n  window.location.href='dashboard.html';\n}",
+              "  err.classList.remove('show');\n  const btn=document.querySelector('#view-register .btn-full');\n  btn.textContent='Creating account…';btn.disabled=true;\n  try{\n    const hash=await sha256(pass);\n    const parts=name.trim().split(/\\s+/);\n    const initials=(parts[0][0]+(parts.length>1?parts[parts.length-1][0]:parts[0][1]||'?')).toUpperCase();\n    const res=await fetch(`${SUPA_URL}/rest/v1/plna_drivers`,{method:'POST',headers:{'apikey':SUPA_KEY,'Authorization':'Bearer '+SUPA_KEY,'Content-Type':'application/json','Prefer':'return=representation'},body:JSON.stringify({haf_username:clever,full_name:name,initials:initials,city:'',plan:'basic',bio:'',password_hash:hash,has_whatsapp:false,confirmed_this_month:0,cancelled_this_month:0})});\n    if(!res.ok){const e=await res.json();err.textContent=e.code==='23505'?'That username is already registered.':'Registration failed. Please try again.';err.classList.add('show');btn.textContent='Create my account';btn.disabled=false;return;}\n    const driver=(await res.json())[0];\n    localStorage.setItem('plna-user',driver.haf_username);\n    localStorage.setItem('plna-profile',JSON.stringify(driver));\n    localStorage.setItem('plna-auth','1');\n    window.location.href='dashboard.html';\n  }catch(e){err.textContent='Connection error. Please try again.';err.classList.add('show');btn.textContent='Create my account';btn.disabled=false;}\n}"
+          )
+
+          with open('login.html', 'w') as f:
+              f.write(c)
+          print('login.html done')
+
+          # ── DASHBOARD: add IDs + read profile from localStorage ──
+          with open('dashboard.html', 'r') as f:
+              c = f.read()
+
+          c = c.replace(
+              '<div class="avatar">JW</div>',
+              '<div class="avatar" id="topbarAvatar">JW</div>'
+          )
+          c = c.replace(
+              '  <span class="strip-name">James Wilson</span>',
+              '  <span class="strip-name" id="stripName">James Wilson</span>'
+          )
+          c = c.replace(
+              '<span class="chip chip-pending">PLNA Plus</span>',
+              '<span class="chip chip-pending" id="planChip">PLNA Plus</span>'
+          )
+          c = c.replace(
+              "function signOut(){localStorage.removeItem('plna-auth');localStorage.removeItem('plna-user');window.location.href='login.html';}",
+              "function signOut(){localStorage.removeItem('plna-auth');localStorage.removeItem('plna-user');localStorage.removeItem('plna-profile');window.location.href='login.html';}"
+          )
+          c = c.replace(
+              "const _user=localStorage.getItem('plna-user')||'JW012390';\n/* ── PLAN + BOOKING LINK ──────────────────────────────────────────────────── */\n// 'basic' | 'plus' | 'pro'  — in production this comes from CleverPay/Supabase\nconst PLNA_PLAN='plus';\nconst PLAN_LABELS={basic:'PLNA Lite — Free',plus:'PLNA Plus — £10/mo',pro:'PLNA Pro — £50/mo'};\nconst PLAN_CAP={basic:10,plus:50,pro:null};\n// Seed: confirmed bookings this month (cancellations don't count toward cap)\nconst CONFIRMED_THIS_MONTH=3;",
+              "const _user=localStorage.getItem('plna-user')||'JW012390';\nconst _profile=JSON.parse(localStorage.getItem('plna-profile')||'null');\n/* ── PLAN + BOOKING LINK ──────────────────────────────────────────────────── */\nconst PLNA_PLAN=(_profile&&_profile.plan)||'basic';\nconst PLAN_LABELS={basic:'PLNA Lite — Free',plus:'PLNA Plus — £10/mo',pro:'PLNA Pro — £50/mo'};\nconst PLAN_CAP={basic:10,plus:50,pro:null};\nconst CONFIRMED_THIS_MONTH=(_profile&&_profile.confirmed_this_month)||0;\n(function(){const av=document.getElementById('topbarAvatar');const sn=document.getElementById('stripName');const pc=document.getElementById('planChip');if(_profile){if(av)av.textContent=_profile.initials||_user.slice(0,2);if(sn)sn.textContent=_profile.full_name||_user;if(pc)pc.textContent=PLAN_LABELS[PLNA_PLAN].split(' — ')[0];}})();"
+          )
+
+          with open('dashboard.html', 'w') as f:
+              f.write(c)
+          print('dashboard.html done')
+
+          # ── BOOK: replace hardcoded DRIVERS with live Supabase fetch ──
+          with open('book.html', 'r') as f:
+              c = f.read()
+
+          old_block = """/* ── DRIVER REGISTRY (seed — production fetches from Supabase) ── */
+const DRIVERS={
+  'JW012390':{name:'James Wilson',initials:'JW',city:'Manchester',plan:'plus',
+    bio:'Full-van driver based in Manchester. Same-day and next-day delivery across the North West and Midlands.',
+    confirmedThisMonth:3, cancelledThisMonth:1},
+  'BF990112':{name:'Ben Fletcher',initials:'BF',city:'Birmingham',plan:'pro',
+    bio:'Pro courier — pallet runs, multi-stop routes, man & van. Available 7 days.',
+    confirmedThisMonth:28, cancelledThisMonth:4, pageViews:94, convRate:71},
+  'LF010190':{name:'Laura Finch',initials:'LF',city:'Leeds',plan:'basic',
+    bio:'',
+    confirmedThisMonth:7, cancelledThisMonth:2},
+  'DEMO0000':{name:'Demo (Basic)',initials:'DB',city:'London',plan:'basic',
+    bio:'', confirmedThisMonth:10, cancelledThisMonth:0},
+};
+
+const params=new URLSearchParams(location.search);
+const driverKey=params.get('driver')||'JW012390';
+const D=DRIVERS[driverKey]||{name:driverKey,initials:driverKey.slice(0,2),city:'',plan:'plus',confirmedThisMonth:0,cancelledThisMonth:0};
+
+document.getElementById('confirmDriverName').textContent=D.name;
+document.title='Book '+D.name+' — HAF PLNA';
+
+/* ── PLAN CONFIG ── */
+const PLANS={
+  basic:{label:'PLNA Lite',chipCls:'chip-info',cap:10,services:1,calendar:false,bio:false,analytics:false,whatsapp:false,brandable:false},
+  plus: {label:'PLNA Plus',chipCls:'chip-orange',cap:50,services:4,calendar:true,bio:true,analytics:false,whatsapp:true,brandable:false},
+  pro:  {label:'PLNA Pro', chipCls:'chip-ok',  cap:null,services:4,calendar:true,bio:true,analytics:true,whatsapp:true,brandable:true},
+};
+const P=PLANS[D.plan]||PLANS.basic;"""
+
+          new_block = """/* ── SUPABASE ── */
+const SUPA_URL='https://ggkpqqrtxtlafdkxcaqg.supabase.co';
+const SUPA_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imdna3BxcXJ0eHRsYWZka3hjYXFnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIxOTM2NjAsImV4cCI6MjA5Nzc2OTY2MH0.hB70KOYZu4dshwhsrxF_dFyBn0n72gStWTwxYGsLdgY';
+
+/* ── PLAN CONFIG ── */
+const PLANS={
+  basic:{label:'PLNA Lite',chipCls:'chip-info',cap:10,services:1,calendar:false,bio:false,analytics:false,whatsapp:false,brandable:false},
+  plus: {label:'PLNA Plus',chipCls:'chip-orange',cap:50,services:4,calendar:true,bio:true,analytics:false,whatsapp:true,brandable:false},
+  pro:  {label:'PLNA Pro', chipCls:'chip-ok',  cap:null,services:4,calendar:true,bio:true,analytics:true,whatsapp:true,brandable:true},
+};
+
+const params=new URLSearchParams(location.search);
+const driverKey=(params.get('driver')||'JW012390').toUpperCase();
+
+/* ── LOAD DRIVER FROM SUPABASE, THEN BUILD PAGE ── */
+let D,P;
+document.getElementById('mainPage').innerHTML='<div style="padding:3rem 1rem;text-align:center;color:var(--muted);font-size:.88rem">Loading driver profile…</div>';
+fetch(`${SUPA_URL}/rest/v1/plna_drivers?haf_username=eq.${encodeURIComponent(driverKey)}&select=*`,{headers:{'apikey':SUPA_KEY,'Authorization':'Bearer '+SUPA_KEY}})
+  .then(r=>r.json())
+  .then(data=>{
+    if(!Array.isArray(data)||!data.length){
+      document.getElementById('mainPage').innerHTML='<div style="padding:3rem 1rem;text-align:center"><div style="font-size:1.1rem;font-weight:700;color:var(--text);margin-bottom:.5rem">Driver not found</div><p style="font-size:.84rem;color:var(--muted)">This booking link may be incorrect or the driver is not yet active.</p><a href="https://usehaf.co.uk" style="display:inline-block;margin-top:1.25rem;font-size:.82rem;font-weight:600;color:var(--orange)">Find a HAF driver →</a></div>';
+      return;
+    }
+    const row=data[0];
+    D={name:row.full_name,initials:row.initials,city:row.city,plan:row.plan,bio:row.bio,whatsapp:row.has_whatsapp,confirmedThisMonth:row.confirmed_this_month,cancelledThisMonth:row.cancelled_this_month,pageViews:row.page_views,convRate:row.conv_rate};
+    P=PLANS[D.plan]||PLANS.basic;
+    document.getElementById('confirmDriverName').textContent=D.name;
+    document.title='Book '+D.name+' — HAF PLNA';
+    buildPage();
+  })
+  .catch(()=>{
+    document.getElementById('mainPage').innerHTML='<div style="padding:3rem 1rem;text-align:center;color:var(--muted);font-size:.88rem">Could not load driver profile. Please try again.</div>';
+  });"""
+
+          if old_block in c:
+              c = c.replace(old_block, new_block)
+              print('book.html DRIVERS block replaced')
+          else:
+              print('WARNING: book.html old block not found, skipping')
+
+          c = c.replace('buildPage();\n</script>', '</script>')
+
+          with open('book.html', 'w') as f:
+              f.write(c)
+          print('book.html done')
+          PYEOF
+      - name: Commit and push
+        run: |
+          git config user.email "otis@usehaf.co.uk"
+          git config user.name "Otis HAF"
+          git add login.html dashboard.html book.html
+          git diff --cached --quiet || git commit -m "Wire booking integration — real Supabase auth on login, live driver data on booking page"
+          git push
