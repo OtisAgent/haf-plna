@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>Book a Driver — HAF PLNA</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{--orange:#f18e00;--orange-2:#ffb347;--bg:#0e1113;--panel:#171a1d;--panel-2:#1e2226;--text:#f0edea;--muted:#8a9298;--line:rgba(240,237,234,.10);--line-strong:rgba(240,237,234,.20);--btn-shadow:0 10px 28px rgba(241,142,0,.30);--radius-sm:16px;--radius-xs:10px;--pill:999px;--font:"Inter","Avenir Next",Arial,sans-serif;--display:"Montserrat","Inter",Arial,sans-serif;}
+[data-theme="light"]{--bg:#f4f2ef;--panel:#ffffff;--panel-2:#eceae6;--text:#1a1e22;--muted:#6b7580;--line:rgba(26,30,34,.10);--line-strong:rgba(26,30,34,.20);}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{font-size:14px;}
+body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:1.55;min-height:100vh;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;text-rendering:optimizeLegibility;font-feature-settings:"kern" 1,"liga" 1;}
+a{color:var(--orange);text-decoration:none;}
+input,select,textarea,button{font-family:inherit;font-size:inherit;color:inherit;border:none;outline:none;background:none;cursor:pointer;}
+
+/* ── TOPBAR ── */
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:0 1.5rem;height:60px;background:rgba(14,17,19,.88);backdrop-filter:blur(16px);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:10;}
+[data-theme="light"] .topbar{background:rgba(244,242,239,.90);}
+.topbar-logo{display:flex;align-items:center;gap:.6rem;}
+.topbar-logo-mark{width:30px;height:30px;background:var(--orange);border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:var(--display);font-weight:900;font-size:.88rem;color:#0e1113;letter-spacing:-.04em;}
+.topbar-logo-text{font-family:var(--display);font-weight:900;font-size:1rem;letter-spacing:-.04em;}
+.topbar-logo-text span{color:var(--orange);}
+.icon-btn{width:32px;height:32px;border-radius:8px;background:var(--panel-2);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;color:var(--muted);transition:color .14s;}
+.icon-btn:hover{color:var(--text);}
+
+.page{max-width:600px;margin:0 auto;padding:1.5rem 1.25rem 5rem;}
+
+/* ── DRIVER HERO ── */
+.driver-hero{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius-sm);padding:1.5rem 1.4rem;margin-bottom:1.1rem;display:flex;align-items:center;gap:1.1rem;}
+.driver-avatar{width:52px;height:52px;border-radius:50%;background:var(--orange);color:#0e1113;font-family:var(--display);font-weight:900;font-size:1.1rem;display:flex;align-items:center;justify-content:center;flex-shrink:0;letter-spacing:-.04em;box-shadow:0 6px 18px rgba(241,142,0,.30);}
+.driver-name{font-family:var(--display);font-size:1.25rem;font-weight:900;letter-spacing:-.04em;color:var(--text);line-height:1;}
+.driver-username{font-size:.72rem;font-weight:600;color:var(--muted);letter-spacing:.04em;margin-top:.25rem;}
+.driver-bio{font-size:.82rem;color:var(--muted);margin-top:.5rem;line-height:1.5;}
+.driver-badges{display:flex;gap:.4rem;flex-wrap:wrap;margin-top:.6rem;}
+.chip{display:inline-flex;align-items:center;gap:.28rem;padding:.2rem .6rem;border-radius:var(--pill);font-size:.68rem;font-weight:700;letter-spacing:.04em;}
+.chip::before{content:'';width:5px;height:5px;border-radius:50%;flex-shrink:0;}
+.chip-ok{background:rgba(62,117,80,.13);color:#5db87a;border:1px solid rgba(62,117,80,.28);}
+.chip-ok::before{background:#5db87a;}
+.chip-info{background:rgba(91,155,213,.13);color:#7db3f5;border:1px solid rgba(91,155,213,.28);}
+.chip-info::before{background:#7db3f5;}
+.chip-orange{background:rgba(241,142,0,.12);color:var(--orange-2);border:1px solid rgba(241,142,0,.25);}
+.chip-orange::before{background:var(--orange);}
+
+/* ── PLAN BADGE ── */
+.plan-badge-row{display:flex;align-items:center;gap:.4rem;margin-bottom:.9rem;font-size:.72rem;color:var(--muted);}
+.plan-badge-row svg{flex-shrink:0;}
+
+/* ── BOOKING COUNTER (Free only) ── */
+.booking-counter{background:rgba(241,142,0,.06);border:1px solid rgba(241,142,0,.18);border-radius:var(--radius-xs);padding:.75rem 1rem;margin-bottom:1.1rem;display:flex;align-items:center;justify-content:space-between;gap:.75rem;flex-wrap:wrap;}
+.counter-label{font-size:.76rem;color:var(--muted);}
+.counter-label strong{color:var(--text);}
+.counter-bar-wrap{display:flex;align-items:center;gap:.65rem;}
+.counter-bar{width:100px;height:6px;border-radius:var(--pill);background:var(--panel-2);overflow:hidden;}
+.counter-fill{height:100%;border-radius:var(--pill);background:var(--orange);transition:width .3s;}
+.counter-num{font-family:var(--display);font-size:.9rem;font-weight:900;color:var(--orange);letter-spacing:-.04em;}
+
+/* ── AVAIL STRIP ── */
+.avail-strip{background:rgba(62,117,80,.07);border:1px solid rgba(62,117,80,.22);border-radius:var(--radius-xs);padding:.65rem 1rem;margin-bottom:1.1rem;display:flex;align-items:center;gap:.7rem;}
+.avail-dot{width:8px;height:8px;border-radius:50%;background:#5db87a;animation:pulse-dot 1.6s ease infinite;flex-shrink:0;}
+@keyframes pulse-dot{0%,100%{opacity:1}50%{opacity:.4}}
+.avail-text{font-size:.82rem;font-weight:600;color:#5db87a;}
+.avail-text span{color:var(--muted);font-weight:400;}
+
+/* ── ANALYTICS (Pro only) ── */
+.analytics-strip{display:grid;grid-template-columns:repeat(3,1fr);gap:.55rem;margin-bottom:1.1rem;}
+.analytics-card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius-xs);padding:.75rem .85rem;text-align:center;}
+.analytics-val{font-family:var(--display);font-size:1.25rem;font-weight:900;color:var(--orange);letter-spacing:-.04em;line-height:1;}
+.analytics-label{font-size:.62rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-top:.28rem;}
+
+/* ── SERVICES ── */
+.section-label{font-size:.68rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:.6rem;}
+.service-cards{display:flex;flex-direction:column;gap:.5rem;margin-bottom:1.1rem;}
+.service-card{background:var(--panel);border:2px solid var(--line);border-radius:var(--radius-xs);padding:.82rem 1rem;display:flex;align-items:center;gap:.75rem;cursor:pointer;transition:border-color .14s,background .14s;}
+.service-card:hover{background:var(--panel-2);border-color:rgba(241,142,0,.25);}
+.service-card.selected{border-color:var(--orange);background:rgba(241,142,0,.05);}
+.service-icon{width:36px;height:36px;border-radius:9px;background:rgba(241,142,0,.10);border:1px solid rgba(241,142,0,.20);display:flex;align-items:center;justify-content:center;color:var(--orange);flex-shrink:0;}
+.service-name{font-size:.88rem;font-weight:700;color:var(--text);letter-spacing:-.01em;}
+.service-desc{font-size:.74rem;color:var(--muted);margin-top:.06rem;}
+.service-price{margin-left:auto;font-family:var(--display);font-size:.92rem;font-weight:900;color:var(--orange);letter-spacing:-.04em;flex-shrink:0;}
+
+/* ── CALENDAR (Plus / Pro) ── */
+.cal-section{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius-sm);padding:1rem 1.1rem;margin-bottom:1.1rem;}
+.cal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:.8rem;}
+.cal-title{font-family:var(--display);font-size:.9rem;font-weight:800;letter-spacing:-.025em;color:var(--text);}
+.cal-nav{display:flex;gap:.3rem;}
+.cal-nav-btn{width:26px;height:26px;border-radius:50%;background:var(--panel-2);border:1px solid var(--line-strong);display:flex;align-items:center;justify-content:center;color:var(--muted);transition:color .14s;}
+.cal-nav-btn:hover{color:var(--text);}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:.25rem;}
+.cal-dname{text-align:center;font-size:.6rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);padding:.2rem 0;}
+.cal-cell{height:38px;display:flex;align-items:center;justify-content:center;border-radius:8px;font-size:.78rem;font-weight:500;color:var(--muted);cursor:pointer;border:1px solid transparent;transition:all .12s;}
+.cal-cell:hover{background:var(--panel-2);color:var(--text);}
+.cal-cell.today{color:var(--orange);border-color:rgba(241,142,0,.35);background:rgba(241,142,0,.07);font-weight:700;}
+.cal-cell.unavail{color:var(--muted);background:rgba(180,72,63,.07);border-color:rgba(180,72,63,.15);cursor:not-allowed;opacity:.6;}
+.cal-cell.unavail:hover{background:rgba(180,72,63,.07);color:var(--muted);}
+.cal-cell.selected{background:var(--orange);color:#fff !important;border-color:var(--orange);}
+.cal-cell.empty{pointer-events:none;}
+.cal-key{display:flex;gap:.75rem;margin-top:.65rem;font-size:.7rem;color:var(--muted);}
+.cal-key-item{display:flex;align-items:center;gap:.3rem;}
+.cal-key-dot{width:8px;height:8px;border-radius:2px;flex-shrink:0;}
+
+/* ── UPGRADE NUDGE ── */
+.upgrade-nudge{background:rgba(241,142,0,.06);border:1px solid rgba(241,142,0,.18);border-radius:var(--radius-xs);padding:.8rem 1rem;margin-bottom:1.1rem;display:flex;align-items:center;gap:.75rem;}
+.upgrade-nudge-icon{width:32px;height:32px;border-radius:8px;background:rgba(241,142,0,.12);border:1px solid rgba(241,142,0,.22);display:flex;align-items:center;justify-content:center;color:var(--orange);flex-shrink:0;}
+.upgrade-nudge-text{flex:1;font-size:.78rem;color:var(--muted);line-height:1.5;}
+.upgrade-nudge-text strong{color:var(--text);}
+.btn-nudge{display:inline-flex;align-items:center;gap:.35rem;padding:.38rem .85rem;border-radius:var(--pill);font-size:.76rem;font-weight:700;background:var(--orange);color:#fff;box-shadow:var(--btn-shadow);transition:opacity .15s;white-space:nowrap;flex-shrink:0;}
+.btn-nudge:hover{opacity:.88;}
+
+/* ── FORM ── */
+.booking-form{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius-sm);padding:1.2rem;margin-bottom:1.1rem;}
+.booking-form-title{font-family:var(--display);font-size:.9rem;font-weight:800;letter-spacing:-.025em;color:var(--text);margin-bottom:1rem;}
+.form-group{margin-bottom:.9rem;}
+.form-label{font-size:.67rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:.35rem;display:block;}
+.form-input,.form-select,.form-textarea{width:100%;background:var(--panel-2);border:1px solid var(--line-strong);border-radius:var(--radius-xs);padding:.58rem .9rem;font-size:.88rem;color:var(--text);transition:border-color .15s,box-shadow .15s;}
+.form-input::placeholder,.form-textarea::placeholder{color:var(--muted);font-weight:400;}
+.form-input:focus,.form-select:focus,.form-textarea:focus{border-color:rgba(241,142,0,.55);box-shadow:0 0 0 3px rgba(241,142,0,.10);outline:none;}
+.form-textarea{resize:vertical;min-height:80px;line-height:1.55;}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:.6rem;}
+option{background:var(--panel);}
+
+/* ── SUBMIT ── */
+.btn-submit{width:100%;padding:.88rem 1rem;border-radius:var(--pill);font-size:.9rem;font-weight:800;letter-spacing:-.01em;background:var(--orange);color:#fff;box-shadow:var(--btn-shadow);transition:opacity .15s,transform .1s;}
+.btn-submit:hover{opacity:.88;}
+.btn-submit:active{transform:scale(.97);}
+.submit-note{font-size:.72rem;color:var(--muted);text-align:center;margin-top:.65rem;line-height:1.5;}
+
+/* ── SUCCESS ── */
+.success-screen{text-align:center;padding:2.5rem 1rem;}
+.success-icon{width:60px;height:60px;border-radius:50%;background:rgba(62,117,80,.15);border:2px solid rgba(62,117,80,.35);display:flex;align-items:center;justify-content:center;margin:0 auto 1.2rem;color:#5db87a;}
+.success-title{font-family:var(--display);font-size:1.35rem;font-weight:900;letter-spacing:-.04em;color:var(--text);margin-bottom:.45rem;}
+.success-sub{font-size:.86rem;color:var(--muted);line-height:1.6;max-width:340px;margin:0 auto 1.25rem;}
+.success-ref{display:inline-block;background:var(--panel-2);border:1px solid var(--line-strong);border-radius:var(--radius-xs);padding:.42rem .95rem;font-family:var(--display);font-size:.88rem;font-weight:800;color:var(--orange);letter-spacing:.04em;margin-bottom:1.25rem;}
+
+/* ── BLOCKED (Basic gated) ── */
+.blocked-screen{text-align:center;padding:3rem 1rem 5rem;}
+
+/* ── FOOTER ── */
+.page-footer{text-align:center;font-size:.7rem;color:var(--muted);padding-top:.5rem;}
+.hide-branding .page-footer{display:none;}
+
+@media(max-width:480px){.form-row{grid-template-columns:1fr;}.driver-hero{flex-direction:column;text-align:center;}.driver-badges{justify-content:center;}.analytics-strip{grid-template-columns:1fr 1fr;}}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-logo">
+    <div class="topbar-logo-mark">PL</div>
+    <div class="topbar-logo-text">HAF <span>PLNA</span></div>
+  </div>
+  <button class="icon-btn" onclick="toggleTheme()">
+    <svg id="themeIcon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+  </button>
+</header>
+
+<div class="page" id="mainPage">
+  <!-- Rendered by JS based on plan tier -->
+</div>
+
+<div class="page" id="successPage" style="display:none">
+  <div class="success-screen">
+    <div class="success-icon">
+      <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+    </div>
+    <div class="success-title">Request sent</div>
+    <p class="success-sub">Your booking request has been sent to <strong id="confirmDriverName">James Wilson</strong>. They'll be in touch to confirm and quote.</p>
+    <div class="success-ref" id="confirmRef">REF-000000</div>
+    <p id="confirmNote" style="font-size:.78rem;color:var(--muted);margin-bottom:1.25rem;line-height:1.5"></p>
+    <a href="#" onclick="location.reload()" style="font-size:.84rem;font-weight:600;color:var(--orange)">Make another booking</a>
+  </div>
+  <div class="page-footer">Powered by <a href="https://usehaf.co.uk" target="_blank">HAF PLNA</a></div>
+</div>
+
+<script>
+/* ── THEME ── */
+const MOON=`<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>`;
+const SUN=`<circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>`;
+const saved=localStorage.getItem('plna-theme')||'dark';
+document.documentElement.dataset.theme=saved;
+document.getElementById('themeIcon').innerHTML=saved==='dark'?MOON:SUN;
+function toggleTheme(){const n=document.documentElement.dataset.theme==='dark'?'light':'dark';document.documentElement.dataset.theme=n;localStorage.setItem('plna-theme',n);document.getElementById('themeIcon').innerHTML=n==='dark'?MOON:SUN;}
+
+/* ── DRIVER REGISTRY (seed — production fetches from Supabase) ── */
+const DRIVERS={
+  'JW012390':{name:'James Wilson',initials:'JW',city:'Manchester',plan:'plus',
+    bio:'Full-van driver based in Manchester. Same-day and next-day delivery across the North West and Midlands.',
+    confirmedThisMonth:3, cancelledThisMonth:1},
+  'BF990112':{name:'Ben Fletcher',initials:'BF',city:'Birmingham',plan:'pro',
+    bio:'Pro courier — pallet runs, multi-stop routes, man & van. Available 7 days.',
+    confirmedThisMonth:28, cancelledThisMonth:4, pageViews:94, convRate:71},
+  'LF010190':{name:'Laura Finch',initials:'LF',city:'Leeds',plan:'basic',
+    bio:'',
+    confirmedThisMonth:7, cancelledThisMonth:2},
+  'DEMO0000':{name:'Demo (Basic)',initials:'DB',city:'London',plan:'basic',
+    bio:'', confirmedThisMonth:10, cancelledThisMonth:0},
+};
+
+const params=new URLSearchParams(location.search);
+const driverKey=params.get('driver')||'JW012390';
+const D=DRIVERS[driverKey]||{name:driverKey,initials:driverKey.slice(0,2),city:'',plan:'plus',confirmedThisMonth:0,cancelledThisMonth:0};
+
+document.getElementById('confirmDriverName').textContent=D.name;
+document.title='Book '+D.name+' — HAF PLNA';
+
+/* ── PLAN CONFIG ── */
+const PLANS={
+  basic:{label:'PLNA Lite',chipCls:'chip-info',cap:10,services:1,calendar:false,bio:false,analytics:false,whatsapp:false,brandable:false},
+  plus: {label:'PLNA Plus',chipCls:'chip-orange',cap:50,services:4,calendar:true,bio:true,analytics:false,whatsapp:true,brandable:false},
+  pro:  {label:'PLNA Pro', chipCls:'chip-ok',  cap:null,services:4,calendar:true,bio:true,analytics:true,whatsapp:true,brandable:true},
+};
+const P=PLANS[D.plan]||PLANS.basic;
+
+/* ── CAP CHECK ── */
+// Cancelled bookings don't count — only confirmed against the cap
+const confirmedUsed=D.confirmedThisMonth||0;
+const capHit=P.cap!==null&&confirmedUsed>=P.cap;
+
+/* ── SERVICE ICONS (keyed by id) ── */
+const SVC_ICONS={
+  'same-day':`<polygon points="3 11 22 2 13 21 11 13 3 11"/>`,
+  'multi':   `<polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>`,
+  'man-van': `<rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/>`,
+  'pallet':  `<path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>`,
+};
+const SVC_SEED=[
+  {id:'same-day',name:'Same-day delivery',desc:'Collect and deliver within hours · full or half van',price:'From £45',enabled:true},
+  {id:'multi',   name:'Multi-stop route', desc:'Up to 8 stops · optimised order',                 price:'From £75', enabled:true},
+  {id:'man-van', name:'Man & van',        desc:'House moves · furniture · heavy items',           price:'From £90', enabled:false},
+  {id:'pallet',  name:'Pallet / luton',   desc:'Tail lift available · pallet network',            price:'From £110',enabled:false},
+];
+// Read driver's saved services from localStorage (written by their dashboard Settings tab)
+// In production: fetched from HAF Supabase plna_driver_services table
+function getDriverServices(){
+  try{
+    const raw=localStorage.getItem('plna-services-'+driverKey);
+    if(raw){
+      const saved=JSON.parse(raw);
+      // Merge with seed icons (icons are UI-only, not stored in DB)
+      return saved.map(s=>({...s,icon:SVC_ICONS[s.id]||''}));
+    }
+  }catch(e){}
+  return SVC_SEED.map(s=>({...s,icon:SVC_ICONS[s.id]||''}));
+}
+// Get full list (for icon lookup) and enabled subset
+const ALL_SERVICES_FULL=getDriverServices();
+// Respect plan cap on number of visible services AND driver's own enabled toggle
+const ALL_SERVICES=ALL_SERVICES_FULL.filter(s=>s.enabled).slice(0,P.services);
+
+/* ── BUILD PAGE ── */
+function buildPage(){
+  const mp=document.getElementById('mainPage');
+
+  // Cap completely hit → show blocked state for basic
+  if(capHit&&D.plan==='basic'){
+    mp.innerHTML=`
+      <div class="blocked-screen">
+        <div style="width:52px;height:52px;border-radius:50%;background:rgba(241,142,0,.12);border:2px solid rgba(241,142,0,.22);display:flex;align-items:center;justify-content:center;margin:0 auto 1.1rem;color:var(--orange);">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        </div>
+        <div style="font-family:var(--display);font-size:1.2rem;font-weight:900;letter-spacing:-.04em;color:var(--text);margin-bottom:.5rem">${D.name}</div>
+        <p style="font-size:.86rem;color:var(--muted);line-height:1.6;max-width:300px;margin:0 auto 1.25rem">
+          This driver has reached their 10 confirmed bookings for this month on the free plan. Try again next month or contact them directly.
+        </p>
+        <a href="https://usehaf.co.uk" style="font-size:.82rem;font-weight:600;color:var(--orange)">Find another PLNA driver →</a>
+      </div>`;
+    return;
+  }
+
+  let html='';
+
+  // ── Driver hero
+  html+=`<div class="driver-hero">
+    <div class="driver-avatar">${D.initials}</div>
+    <div>
+      <div class="driver-name">${D.name}</div>
+      <div class="driver-username">HAF · ${driverKey}${D.city?' · '+D.city:''}</div>
+      ${P.bio&&D.bio?`<div class="driver-bio">${D.bio}</div>`:''}
+      <div class="driver-badges">
+        <span class="chip chip-ok">Clever Checked</span>
+        <span class="chip chip-info">Full Van</span>
+        <span class="chip ${P.chipCls}">${P.label}</span>
+      </div>
+    </div>
+  </div>`;
+
+  // ── Plan verification badge
+  html+=`<div class="plan-badge-row">
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="color:var(--orange)"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+    <span>${P.label} member · CleverPay verified · bookings enabled</span>
+  </div>`;
+
+  // ── Analytics strip (Pro only)
+  if(P.analytics){
+    html+=`<div class="analytics-strip">
+      <div class="analytics-card"><div class="analytics-val">${D.pageViews||0}</div><div class="analytics-label">Page views</div></div>
+      <div class="analytics-card"><div class="analytics-val">${D.convRate||0}%</div><div class="analytics-label">Conversion</div></div>
+      <div class="analytics-card"><div class="analytics-val">∞</div><div class="analytics-label">Bookings / mo</div></div>
+    </div>`;
+  }
+
+  // ── Confirmed booking counter (Basic / Plus)
+  if(P.cap!==null){
+    const pct=Math.min(confirmedUsed/P.cap*100,100);
+    const remaining=P.cap-confirmedUsed;
+    html+=`<div class="booking-counter">
+      <div class="counter-label"><strong>${remaining}</strong> of ${P.cap} confirmed bookings remaining this month</div>
+      <div class="counter-bar-wrap">
+        <div class="counter-bar"><div class="counter-fill" style="width:${pct}%"></div></div>
+        <div class="counter-num">${confirmedUsed}/${P.cap}</div>
+      </div>
+    </div>`;
+  }
+
+  // ── Availability
+  html+=`<div class="avail-strip">
+    <div class="avail-dot"></div>
+    <div class="avail-text">Available for bookings <span>· ${P.whatsapp?'responds within 1 hour via WhatsApp':'responds within 24 hours'}</span></div>
+  </div>`;
+
+  // ── Services (ALL_SERVICES is already filtered by driver toggle + plan cap)
+  const noServices=ALL_SERVICES.length===0;
+  html+=`<div class="section-label">Services offered</div>
+  <div class="service-cards" id="serviceCards">
+    ${noServices
+      ? `<div style="padding:.9rem 1rem;font-size:.82rem;color:var(--muted)">This driver hasn't listed any services yet.</div>`
+      : ALL_SERVICES.map((s,i)=>`
+        <div class="service-card${i===0?' selected':''}" onclick="selectService(this,'${s.id}')">
+          <div class="service-icon"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">${s.icon}</svg></div>
+          <div><div class="service-name">${s.name}</div><div class="service-desc">${s.desc}</div></div>
+          <div class="service-price">${s.price}</div>
+        </div>`).join('')}
+  </div>`;
+
+  // ── Upgrade nudge for Basic (show locked services teaser)
+  if(D.plan==='basic'){
+    html+=`<div class="upgrade-nudge">
+      <div class="upgrade-nudge-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+      <div class="upgrade-nudge-text"><strong>More services available on PLNA Plus.</strong> Multi-stop, man & van, and pallet runs unlock at £10/mo — plus a live availability calendar for your customers.</div>
+      <a href="https://clever.usehaf.co.uk" class="btn-nudge">Upgrade</a>
+    </div>`;
+  }
+
+  // ── Availability calendar (Plus / Pro only)
+  if(P.calendar){
+    html+=`<div class="cal-section">
+      <div class="cal-head">
+        <div class="cal-title" id="calTitle">July 2026</div>
+        <div class="cal-nav">
+          <button class="cal-nav-btn" onclick="calShift(-1)"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m15 18-6-6 6-6"/></svg></button>
+          <button class="cal-nav-btn" onclick="calShift(1)"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m9 18 6-6-6-6"/></svg></button>
+        </div>
+      </div>
+      <div class="cal-grid" id="calGrid"></div>
+      <div class="cal-key">
+        <div class="cal-key-item"><div class="cal-key-dot" style="background:var(--orange)"></div>Today</div>
+        <div class="cal-key-item"><div class="cal-key-dot" style="background:#5db87a"></div>Available</div>
+        <div class="cal-key-item"><div class="cal-key-dot" style="background:rgba(180,72,63,.5)"></div>Unavailable</div>
+      </div>
+    </div>`;
+  } else {
+    // Basic: show a simple date preference field
+    html+=`<div class="booking-form" style="padding:1rem 1.1rem;margin-bottom:1.1rem;">
+      <div class="section-label" style="margin-bottom:.5rem">Preferred date</div>
+      <input class="form-input" type="date" id="basicDate" min="${new Date().toISOString().split('T')[0]}">
+      <div style="font-size:.72rem;color:var(--muted);margin-top:.45rem">The driver will confirm availability when they respond.</div>
+    </div>`;
+  }
+
+  // ── Booking form
+  html+=`<div class="booking-form">
+    <div class="booking-form-title">Your details</div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">First name</label><input class="form-input" type="text" id="bkFirst" placeholder="First name"></div>
+      <div class="form-group"><label class="form-label">Last name</label><input class="form-input" type="text" id="bkLast" placeholder="Last name"></div>
+    </div>
+    <div class="form-group"><label class="form-label">Phone number</label><input class="form-input" type="tel" id="bkPhone" placeholder="+44 7800 000000"></div>
+    <div class="form-group"><label class="form-label">Email address</label><input class="form-input" type="email" id="bkEmail" placeholder="your@email.com"></div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Collection postcode</label><input class="form-input" type="text" id="bkFrom" placeholder="From" style="text-transform:uppercase" oninput="this.value=this.value.toUpperCase()"></div>
+      <div class="form-group"><label class="form-label">Delivery postcode</label><input class="form-input" type="text" id="bkTo" placeholder="To" style="text-transform:uppercase" oninput="this.value=this.value.toUpperCase()"></div>
+    </div>
+    ${P.calendar?`
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Preferred time</label>
+        <select class="form-select" id="bkTime">
+          <option value="">Select time</option>
+          <option>08:00 – 10:00</option><option>10:00 – 12:00</option>
+          <option>12:00 – 14:00</option><option>14:00 – 16:00</option>
+          <option>16:00 – 18:00</option><option>Flexible</option>
+        </select>
+      </div>
+      <div class="form-group"><label class="form-label">Van size</label>
+        <select class="form-select" id="bkVan">
+          <option value="">Any</option><option>Small box van</option>
+          <option>Half van</option><option>Full van</option><option>Luton / pallet</option>
+        </select>
+      </div>
+    </div>`:''}
+    <div class="form-group"><label class="form-label">Notes</label><textarea class="form-textarea" id="bkNotes" placeholder="Stairs, heavy items, access info, anything the driver should know…"></textarea></div>
+    <button class="btn-submit" onclick="submitBooking()">Send booking request</button>
+    <p class="submit-note">${P.whatsapp
+      ?'The driver will confirm via WhatsApp within 1 hour. No payment is taken now.'
+      :'The driver will review your request and respond within 24 hours. No payment is taken now.'}</p>
+  </div>`;
+
+  // ── Footer
+  html+=`<div class="page-footer${P.brandable&&D.hideBranding?' hide-branding':''}">Powered by <a href="https://usehaf.co.uk" target="_blank">HAF PLNA</a> · <a href="https://clever.usehaf.co.uk" target="_blank">CleverPay verified</a></div>`;
+
+  mp.innerHTML=html;
+
+  if(P.calendar) initCal();
+}
+
+/* ── SERVICES ── */
+function selectService(el,id){document.querySelectorAll('.service-card').forEach(c=>c.classList.remove('selected'));el.classList.add('selected');}
+
+/* ── CALENDAR ── */
+const MN=['January','February','March','April','May','June','July','August','September','October','November','December'];
+let bY=2026,bM=6,bSel=null;
+const UNAVAIL=[1,3,4,8,15,22];
+function initCal(){renderCal();}
+function renderCal(){
+  const title=document.getElementById('calTitle');
+  const grid=document.getElementById('calGrid');
+  if(!title||!grid) return;
+  title.textContent=MN[bM]+' '+bY;
+  const first=new Date(bY,bM,1).getDay(),blanks=first===0?6:first-1,days=new Date(bY,bM+1,0).getDate();
+  let html=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'].map(d=>`<div class="cal-dname">${d[0]}</div>`).join('');
+  for(let i=0;i<blanks;i++) html+=`<div class="cal-cell empty"></div>`;
+  for(let d=1;d<=days;d++){
+    const isTod=d===7&&bM===6&&bY===2026,isUn=UNAVAIL.includes(d),isSel=d===bSel;
+    let cls='cal-cell';
+    if(isUn) cls+=' unavail';
+    else if(isSel) cls+=' selected';
+    else if(isTod) cls+=' today';
+    html+=`<div class="${cls}"${isUn?'':` onclick="pickDay(${d})"`}>${d}</div>`;
+  }
+  grid.innerHTML=html;
+}
+function calShift(d){bM+=d;if(bM>11){bM=0;bY++;}if(bM<0){bM=11;bY--;}bSel=null;renderCal();}
+function pickDay(d){bSel=d;renderCal();}
+
+/* ── SUBMIT ── */
+function submitBooking(){
+  const first=document.getElementById('bkFirst')?.value.trim();
+  const last=document.getElementById('bkLast')?.value.trim();
+  const phone=document.getElementById('bkPhone')?.value.trim();
+  const from=document.getElementById('bkFrom')?.value.trim();
+  const to=document.getElementById('bkTo')?.value.trim();
+  if(!first||!last||!phone||!from||!to){alert('Please fill in your name, phone number, and both postcodes.');return;}
+  if(P.calendar&&!bSel){alert('Please select a date from the calendar.');return;}
+  const ref='REF-'+Math.floor(100000+Math.random()*900000);
+  document.getElementById('confirmRef').textContent=ref;
+  document.getElementById('confirmNote').textContent=P.whatsapp
+    ?'Check your WhatsApp — the driver will confirm within 1 hour.'
+    :'The driver will review and respond within 24 hours.';
+  document.getElementById('mainPage').style.display='none';
+  document.getElementById('successPage').style.display='block';
+  window.scrollTo(0,0);
+}
+
+buildPage();
+</script>
+</body>
+</html>

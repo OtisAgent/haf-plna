@@ -1,239 +1,1182 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>PLNA — Driver Planning</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>HAF PLNA — Driver Dashboard</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Montserrat:wght@600;700;800;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="plna-base.css">
-<link rel="stylesheet" href="plna-tabs.css">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{--orange:#f18e00;--orange-2:#ffb347;--bg:#0e1113;--panel:#171a1d;--panel-2:#1e2226;--text:#f0edea;--muted:#8a9298;--line:rgba(240,237,234,.10);--line-strong:rgba(240,237,234,.20);--shadow:0 28px 80px rgba(0,0,0,.42);--soft-shadow:0 10px 30px rgba(0,0,0,.28);--btn-shadow:0 10px 28px rgba(241,142,0,.30);--radius:26px;--radius-sm:16px;--radius-xs:10px;--pill:999px;--font:"Inter","Avenir Next",Arial,sans-serif;--display:"Montserrat","Inter",Arial,sans-serif;}
+[data-theme="light"]{--bg:#f4f2ef;--panel:#ffffff;--panel-2:#eceae6;--text:#1a1e22;--muted:#6b7580;--line:rgba(26,30,34,.10);--line-strong:rgba(26,30,34,.20);}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{font-size:14px;-webkit-text-size-adjust:100%}
+body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:1.55;min-height:100vh;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;overflow-x:hidden;transition:background .2s,color .2s;text-rendering:optimizeLegibility;font-feature-settings:"kern" 1,"liga" 1,"calt" 1;}
+ul,ol{list-style:none}
+img,svg{display:block;max-width:100%}
+input,textarea,select,button{font-family:inherit;font-size:inherit;color:inherit;outline:none;border:none;background:none;cursor:pointer}
+a{color:var(--orange);text-decoration:none}
+
+/* ── TOPBAR ─────────────────────────────────────────────────── */
+.topbar{position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:0 1.5rem;height:64px;background:rgba(14,17,19,.88);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-bottom:1px solid var(--line);}
+[data-theme="light"] .topbar{background:rgba(244,242,239,.90);}
+.topbar-logo{display:flex;align-items:center;gap:.65rem;text-decoration:none;}
+.topbar-logo-mark{width:34px;height:34px;background:var(--orange);border-radius:9px;display:flex;align-items:center;justify-content:center;font-family:var(--display);font-weight:900;font-size:1rem;color:#0e1113;flex-shrink:0;letter-spacing:-.04em;}
+.topbar-logo-text{font-family:var(--display);font-weight:900;font-size:1.15rem;color:var(--text);letter-spacing:-.04em;}
+.topbar-logo-text span{color:var(--orange);}
+.topbar-actions{display:flex;align-items:center;gap:.5rem;}
+.icon-btn{width:36px;height:36px;border-radius:var(--radius-xs);background:var(--panel-2);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;color:var(--muted);transition:background .15s,color .15s;}
+.icon-btn:hover{background:var(--line-strong);color:var(--text);}
+.avatar{width:34px;height:34px;border-radius:50%;background:var(--orange);color:#0e1113;font-size:.72rem;font-weight:800;font-family:var(--display);display:flex;align-items:center;justify-content:center;letter-spacing:.02em;}
+
+/* ── STATUS STRIP ───────────────────────────────────────────── */
+.status-strip{display:flex;align-items:center;gap:.55rem;flex-wrap:wrap;padding:.55rem 1.5rem;border-bottom:1px solid var(--line);background:var(--panel);font-size:.8rem;}
+.strip-name{font-weight:700;color:var(--text);font-family:var(--display);letter-spacing:-.01em;}
+.sep{color:var(--line-strong);}
+.chip{display:inline-flex;align-items:center;gap:.3rem;padding:.2rem .65rem;border-radius:var(--pill);font-size:.72rem;font-weight:600;letter-spacing:.03em;line-height:1;}
+.chip::before{content:'';width:6px;height:6px;border-radius:50%;flex-shrink:0;}
+.chip-delivered{background:rgba(62,117,80,.15);color:#5db87a;border:1px solid rgba(62,117,80,.30);}
+.chip-delivered::before{background:#5db87a;}
+.chip-assigned{background:rgba(241,142,0,.12);color:var(--orange-2);border:1px solid rgba(241,142,0,.26);}
+.chip-assigned::before{background:var(--orange);}
+.chip-pending{background:rgba(185,133,48,.14);color:#d4a63a;border:1px solid rgba(185,133,48,.28);}
+.chip-pending::before{background:#d4a63a;}
+.chip-transit{background:rgba(59,130,246,.13);color:#7db3f5;border:1px solid rgba(59,130,246,.26);}
+.chip-transit::before{background:#7db3f5;animation:pulse-dot 1.6s ease infinite;}
+@keyframes pulse-dot{0%,100%{opacity:1}50%{opacity:.4}}
+
+/* ── TAB BAR ────────────────────────────────────────────────── */
+.tab-bar{display:flex;gap:.2rem;border-bottom:1px solid var(--line);overflow-x:auto;scrollbar-width:none;padding:0 1.5rem;background:var(--panel);}
+.tab-bar::-webkit-scrollbar{display:none;}
+.tab-item{padding:.65rem .85rem;font-size:.82rem;font-weight:700;letter-spacing:-.01em;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;transition:color 160ms ease,border-bottom-color 160ms ease;user-select:none;flex-shrink:0;}
+.tab-item:hover{color:var(--text);}
+.tab-item.active{color:var(--orange);border-bottom-color:var(--orange);}
+
+.tab-panel{display:none;padding:1.25rem 1.5rem 5rem;}
+.tab-panel.active{display:block;}
+
+/* ── SECTION HEAD ───────────────────────────────────────────── */
+.section-head{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:.85rem;gap:.5rem;}
+.section-title{font-family:var(--display);font-size:.96rem;font-weight:800;letter-spacing:-.025em;color:var(--text);}
+.section-sub{font-size:.76rem;color:var(--muted);margin-top:.1rem;font-weight:400;}
+.section-link{font-size:.76rem;font-weight:600;color:var(--orange);flex-shrink:0;padding:.28rem .65rem;border-radius:var(--pill);border:1px solid rgba(241,142,0,.25);transition:background .15s;cursor:pointer;}
+.section-link:hover{background:rgba(241,142,0,.08);}
+
+/* ── KPI CARDS ──────────────────────────────────────────────── */
+.kpi-row{display:grid;grid-template-columns:repeat(3,1fr);gap:.7rem;margin-bottom:1.1rem;}
+.kpi-card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius-sm);padding:1.1rem 1.2rem;display:flex;flex-direction:column;gap:.45rem;transition:border-color 180ms,box-shadow 180ms;}
+.kpi-card:hover{border-color:var(--line-strong);box-shadow:var(--soft-shadow);}
+.kpi-label{font-size:.68rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);}
+.kpi-value{font-size:1.9rem;font-weight:900;font-family:var(--display);line-height:1;color:var(--text);letter-spacing:-.045em;}
+.kpi-value.orange{color:var(--orange);}
+.kpi-delta{font-size:.74rem;font-weight:500;color:var(--muted);}
+.kpi-delta.up{color:#5db87a;}
+
+/* ── ACTION CARDS ───────────────────────────────────────────── */
+.action-cards{display:flex;flex-direction:column;gap:.65rem;margin-bottom:1.1rem;}
+.action-card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius-sm);padding:1rem 1.2rem;display:flex;align-items:center;gap:.9rem;cursor:pointer;text-decoration:none;color:var(--text);transition:background 180ms,border-color 180ms,box-shadow 200ms,transform 180ms;}
+.action-card:hover{background:var(--panel-2);border-color:rgba(241,142,0,.30);box-shadow:var(--soft-shadow);transform:translateY(-2px);color:var(--text);}
+.action-card:active{transform:translateY(0);}
+.action-card-icon{width:44px;height:44px;border-radius:var(--radius-xs);background:rgba(241,142,0,.10);border:1px solid rgba(241,142,0,.20);display:flex;align-items:center;justify-content:center;color:var(--orange);flex-shrink:0;transition:background 180ms,border-color 180ms;}
+.action-card:hover .action-card-icon{background:rgba(241,142,0,.18);border-color:rgba(241,142,0,.35);}
+.action-card-body{flex:1;min-width:0;}
+.action-card-title{font-weight:700;font-size:.9rem;color:var(--text);margin-bottom:.12rem;letter-spacing:-.01em;}
+.action-card-desc{font-size:.78rem;color:var(--muted);line-height:1.5;font-weight:400;}
+.action-card-arrow{width:28px;height:28px;border-radius:50%;background:rgba(241,142,0,.10);border:1px solid rgba(241,142,0,.22);display:flex;align-items:center;justify-content:center;color:var(--orange);flex-shrink:0;transition:background 180ms,transform 180ms;}
+.action-card:hover .action-card-arrow{background:var(--orange);color:#0e1113;transform:translateX(2px);}
+
+/* ── JOB CARD ───────────────────────────────────────────────── */
+.job-card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius-sm);padding:.95rem 1.1rem;display:flex;flex-direction:column;gap:.6rem;transition:background 180ms,border-color 180ms,box-shadow 200ms,transform 180ms;margin-bottom:.65rem;}
+.job-card:hover{background:var(--panel-2);border-color:var(--line-strong);box-shadow:var(--soft-shadow);transform:translateY(-1px);}
+.job-card.active-job{border-color:rgba(241,142,0,.30);}
+.job-card-header{display:flex;align-items:flex-start;justify-content:space-between;gap:.75rem;}
+.job-card-id{font-size:.68rem;font-weight:700;letter-spacing:.06em;color:var(--muted);text-transform:uppercase;}
+.job-card-route{display:flex;align-items:center;gap:.4rem;font-size:.9rem;font-weight:700;color:var(--text);margin-top:.15rem;letter-spacing:-.015em;}
+.job-card-route .arr{color:var(--orange);}
+.job-card-meta{font-size:.76rem;color:var(--muted);margin-top:.1rem;font-weight:400;}
+.job-card-footer{display:flex;align-items:center;justify-content:space-between;padding-top:.55rem;border-top:1px solid var(--line);flex-wrap:wrap;gap:.4rem;}
+.job-card-price{font-size:1.1rem;font-weight:900;color:var(--orange);font-family:var(--display);letter-spacing:-.04em;}
+.job-card-price-sub{font-size:.7rem;color:var(--muted);font-weight:400;font-family:var(--font);}
+.job-actions{display:flex;gap:.4rem;flex-wrap:wrap;}
+.dist-badge{display:inline-flex;align-items:center;gap:.28rem;font-size:.7rem;font-weight:700;color:var(--orange-2);background:rgba(241,142,0,.10);border:1px solid rgba(241,142,0,.22);border-radius:var(--pill);padding:.12rem .55rem;}
+.dist-badge.closest{color:#5db87a;background:rgba(62,117,80,.12);border-color:rgba(62,117,80,.28);}
+
+/* ── BUTTONS ────────────────────────────────────────────────── */
+.btn{display:inline-flex;align-items:center;gap:.38rem;padding:.55rem 1.15rem;border-radius:var(--pill);font-size:.82rem;font-weight:700;letter-spacing:-.01em;transition:opacity .15s,transform .1s,box-shadow .15s;white-space:nowrap;cursor:pointer;}
+.btn:active{transform:scale(.96);}
+.btn-primary{background:var(--orange);color:#fff;box-shadow:var(--btn-shadow);}
+.btn-primary:hover{opacity:.88;}
+.btn-ghost{background:var(--panel-2);border:1px solid var(--line-strong);color:var(--text);}
+.btn-ghost:hover{border-color:rgba(241,142,0,.4);color:var(--orange);}
+.btn-sm{padding:.38rem .82rem;font-size:.76rem;}
+.btn-danger{background:rgba(180,72,63,.15);border:1px solid rgba(180,72,63,.30);color:#e07068;}
+.btn-danger:hover{background:rgba(180,72,63,.25);}
+
+/* ── COMPLIANCE CARD ─────────────────────────────────────────── */
+.compliance-card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius-sm);padding:.9rem 1.1rem;margin-bottom:1.1rem;display:flex;align-items:center;gap:.9rem;flex-wrap:wrap;}
+.comp-item{display:flex;align-items:center;gap:.38rem;font-size:.78rem;}
+.comp-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
+.comp-dot.ok{background:#5db87a;}
+.comp-dot.warn{background:#d4a63a;box-shadow:0 0 0 2px rgba(185,133,48,.20);}
+.comp-label{color:var(--muted);}
+.comp-val{font-weight:700;color:var(--text);margin-left:.12rem;}
+
+/* ── HOME ────────────────────────────────────────────────────── */
+.avail-hero{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius-sm);padding:1.1rem 1.3rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;margin-bottom:1.1rem;transition:border-color .2s,background .2s;}
+.avail-hero.on{border-color:rgba(62,117,80,.4);background:rgba(62,117,80,.05);}
+.avail-status-label{font-size:.65rem;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);margin-bottom:.2rem;}
+.avail-status-val{font-family:var(--display);font-size:1.2rem;font-weight:900;letter-spacing:-.04em;}
+.avail-status-val.on{color:#5db87a;}
+.avail-status-val.off{color:var(--muted);}
+.avail-sub{font-size:.74rem;color:var(--muted);margin-top:.12rem;}
+.toggle-track{width:50px;height:26px;border-radius:var(--pill);background:var(--panel-2);border:1px solid var(--line-strong);position:relative;cursor:pointer;transition:background .25s,border-color .25s;flex-shrink:0;}
+.toggle-track.on{background:rgba(62,117,80,.75);border-color:rgba(62,117,80,.9);}
+.toggle-thumb{position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:#fff;box-shadow:0 2px 5px rgba(0,0,0,.28);transition:transform .22s cubic-bezier(.4,0,.2,1);}
+.toggle-track.on .toggle-thumb{transform:translateX(24px);}
+.stats-strip{display:grid;grid-template-columns:repeat(3,1fr);gap:.65rem;margin-bottom:1.1rem;}
+.stat-pill{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius-sm);padding:.8rem .9rem;text-align:center;}
+.stat-pill-val{font-family:var(--display);font-size:1.4rem;font-weight:900;color:var(--orange);letter-spacing:-.045em;line-height:1;}
+.stat-pill-label{font-size:.65rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-top:.3rem;}
+.planner-card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius-sm);overflow:hidden;margin-bottom:1.1rem;}
+.planner-header{padding:.8rem 1.1rem;background:rgba(241,142,0,.06);border-bottom:1px solid rgba(241,142,0,.14);display:flex;align-items:center;justify-content:space-between;}
+.planner-header-title{font-family:var(--display);font-size:.9rem;font-weight:800;color:var(--orange-2);letter-spacing:-.025em;display:flex;align-items:center;gap:.45rem;}
+.planner-body{padding:1rem 1.1rem;}
+.stop-list{display:flex;flex-direction:column;gap:.45rem;margin-bottom:.9rem;}
+.stop-row{display:flex;align-items:center;gap:.6rem;}
+.stop-index{width:20px;height:20px;border-radius:50%;flex-shrink:0;background:rgba(241,142,0,.12);border:1px solid rgba(241,142,0,.25);display:flex;align-items:center;justify-content:center;font-size:.62rem;font-weight:800;color:var(--orange);font-family:var(--display);}
+.stop-index.origin{background:var(--orange);color:#0e1113;border-color:var(--orange);}
+.stop-input{flex:1;background:var(--panel-2);border:1px solid var(--line-strong);border-radius:var(--radius-xs);padding:.5rem .85rem;font-size:.86rem;color:var(--text);transition:border-color .15s,box-shadow .15s;}
+.stop-input::placeholder{color:var(--muted);}
+.stop-input:focus{border-color:rgba(241,142,0,.5);box-shadow:0 0 0 2px rgba(241,142,0,.10);outline:none;}
+.stop-remove{width:24px;height:24px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;color:var(--muted);transition:color .14s,background .14s;border:1px solid transparent;}
+.stop-remove:hover{color:#e07068;background:rgba(180,72,63,.12);border-color:rgba(180,72,63,.25);}
+.planner-actions{display:flex;gap:.55rem;flex-wrap:wrap;align-items:center;}
+.btn-add-stop{display:inline-flex;align-items:center;gap:.32rem;font-size:.76rem;font-weight:600;color:var(--muted);padding:.32rem .7rem;border-radius:var(--pill);border:1px dashed var(--line-strong);transition:color .14s,border-color .14s;}
+.btn-add-stop:hover{color:var(--orange);border-color:rgba(241,142,0,.4);}
+.route-result{background:var(--panel-2);border:1px solid rgba(241,142,0,.18);border-radius:var(--radius-xs);padding:.85rem .95rem;margin-top:.8rem;display:none;}
+.route-result.show{display:block;}
+.route-result-row{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:.35rem;}
+.route-result-stat{text-align:center;}
+.route-result-val{font-family:var(--display);font-size:1.15rem;font-weight:900;color:var(--orange);letter-spacing:-.02em;}
+.route-result-label{font-size:.62rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-top:.12rem;}
+.route-divider{width:1px;height:2rem;background:var(--line-strong);}
+.route-result-stops{font-size:.76rem;color:var(--muted);margin-top:.55rem;border-top:1px solid var(--line);padding-top:.55rem;}
+.route-stop-line{display:flex;align-items:center;gap:.45rem;padding:.16rem 0;}
+.route-stop-dot{width:6px;height:6px;border-radius:50%;background:var(--orange);flex-shrink:0;}
+.route-stop-dot.last{background:#5db87a;}
+.route-result-btns{display:flex;gap:.45rem;margin-top:.7rem;flex-wrap:wrap;}
+.quote-card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius-sm);overflow:hidden;margin-bottom:1.1rem;}
+.quote-card-header{padding:.8rem 1.1rem;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;}
+.quote-card-title{font-family:var(--display);font-size:.88rem;font-weight:800;color:var(--text);letter-spacing:-.01em;display:flex;align-items:center;gap:.45rem;}
+.quote-body{padding:.95rem 1.1rem;}
+.quote-inputs{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:.55rem;margin-bottom:.8rem;}
+.quote-pc-input{background:var(--panel-2);border:1px solid var(--line-strong);border-radius:var(--radius-xs);padding:.5rem .85rem;font-size:.88rem;font-weight:600;color:var(--text);text-transform:uppercase;transition:border-color .15s;width:100%;}
+.quote-pc-input::placeholder{color:var(--muted);text-transform:none;font-weight:400;}
+.quote-pc-input:focus{border-color:rgba(241,142,0,.5);outline:none;}
+.quote-swap{width:30px;height:30px;border-radius:50%;background:var(--panel-2);border:1px solid var(--line-strong);display:flex;align-items:center;justify-content:center;color:var(--muted);transition:background .14s,color .14s,transform .2s;flex-shrink:0;}
+.quote-swap:hover{background:var(--line-strong);color:var(--text);}
+.quote-swap:active{transform:rotate(180deg) scale(.9);}
+.quote-row2{display:flex;gap:.55rem;margin-bottom:.8rem;flex-wrap:wrap;}
+.quote-select,.cost-input,.cost-select{flex:1;min-width:120px;background:var(--panel-2);border:1px solid var(--line-strong);border-radius:var(--radius-xs);padding:.5rem .85rem;font-size:.84rem;color:var(--text);transition:border-color .15s;}
+.quote-select:focus,.cost-input:focus,.cost-select:focus{border-color:rgba(241,142,0,.5);outline:none;}
+option{background:var(--panel);}
+.quote-result{background:rgba(241,142,0,.06);border:1px solid rgba(241,142,0,.20);border-radius:var(--radius-xs);padding:.85rem .95rem;display:none;margin-top:.8rem;}
+.quote-result.show{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.45rem;}
+.quote-price{font-family:var(--display);font-size:2rem;font-weight:900;color:var(--orange);letter-spacing:-.06em;line-height:1;}
+.quote-price-sub{font-size:.72rem;color:var(--muted);margin-top:.18rem;font-weight:400;}
+.quote-breakdown{font-size:.76rem;color:var(--muted);text-align:right;line-height:1.7;}
+.quote-breakdown strong{color:var(--text);}
+.exchange-panel{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius-sm);overflow:hidden;margin-bottom:1.1rem;}
+.exchange-header{padding:.8rem 1.1rem;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;}
+.exchange-title{font-family:var(--display);font-size:.9rem;font-weight:800;color:var(--text);letter-spacing:-.025em;}
+.live-badge{display:inline-flex;align-items:center;gap:.32rem;font-size:.66rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:#5db87a;background:rgba(62,117,80,.12);border:1px solid rgba(62,117,80,.28);border-radius:var(--pill);padding:.14rem .55rem;}
+.live-badge::before{content:'';width:5px;height:5px;border-radius:50%;background:#5db87a;animation:pulse-dot 1.4s ease infinite;}
+.exchange-job{display:flex;align-items:center;gap:.85rem;padding:.8rem 1.1rem;border-bottom:1px solid var(--line);transition:background .14s;}
+.exchange-job:last-child{border-bottom:none;}
+.exchange-job:hover{background:rgba(240,237,234,.03);}
+.exchange-job-info{flex:1;min-width:0;}
+.exchange-job-route{font-size:.86rem;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.exchange-job-meta{font-size:.73rem;color:var(--muted);margin-top:.08rem;}
+.exchange-job-right{text-align:right;flex-shrink:0;}
+.exchange-job-pay{font-family:var(--display);font-size:1rem;font-weight:900;color:var(--orange);letter-spacing:-.04em;}
+.exchange-job-dist{font-size:.7rem;color:var(--muted);margin-top:.08rem;}
+
+/* ════════════════════════════════════════════════════════════
+   CALENDAR — VIEW SWITCHER + COMPACT CELLS
+   ════════════════════════════════════════════════════════════ */
+.cal-view-bar{display:flex;gap:.3rem;margin-bottom:.9rem;}
+.cal-view-btn{padding:.3rem .72rem;border-radius:var(--pill);font-size:.74rem;font-weight:600;border:1px solid var(--line-strong);color:var(--muted);transition:all .14s;cursor:pointer;}
+.cal-view-btn.active{background:var(--orange);border-color:var(--orange);color:#fff;}
+.cal-view-btn:hover:not(.active){color:var(--text);}
+
+.cal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:.75rem;}
+.cal-month-label{font-family:var(--display);font-size:1rem;font-weight:900;letter-spacing:-.03em;color:var(--text);}
+.cal-nav{display:flex;gap:.3rem;}
+.cal-nav-btn{width:28px;height:28px;border-radius:50%;background:var(--panel);border:1px solid var(--line-strong);display:flex;align-items:center;justify-content:center;color:var(--muted);transition:color .14s,background .14s;}
+.cal-nav-btn:hover{color:var(--text);background:var(--panel-2);}
+
+/* Month grid — compact */
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:.3rem;margin-bottom:1rem;}
+.cal-day-name{text-align:center;font-size:.6rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);padding:.25rem 0;}
+.cal-day{height:44px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.2rem;border-radius:10px;font-size:.78rem;font-weight:600;color:var(--muted);cursor:pointer;border:1px solid transparent;transition:background .12s,border-color .12s,color .12s;position:relative;}
+.cal-day:hover{background:var(--panel-2);color:var(--text);}
+.cal-day.today{color:var(--orange);font-weight:700;border-color:rgba(241,142,0,.35);background:rgba(241,142,0,.07);}
+.cal-day.has-jobs::after{content:'';position:absolute;bottom:5px;left:50%;transform:translateX(-50%);width:4px;height:4px;border-radius:50%;background:var(--orange);}
+.cal-day.done-day{color:#5db87a;}
+.cal-day.done-day::after{background:#5db87a;}
+.cal-day.selected{background:var(--orange);color:#fff !important;border-color:var(--orange);}
+.cal-day.selected::after{background:#fff;}
+.cal-day.empty{pointer-events:none;}
+
+/* Quarter view — 3 mini months */
+.quarter-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:1rem;}
+.mini-month{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius-sm);padding:.75rem .65rem;}
+.mini-month-label{font-family:var(--display);font-size:.76rem;font-weight:800;color:var(--text);margin-bottom:.45rem;text-align:center;letter-spacing:-.02em;}
+.mini-cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:.18rem;}
+.mini-day-name{text-align:center;font-size:.5rem;font-weight:700;text-transform:uppercase;color:var(--muted);padding:.12rem 0;}
+.mini-day{height:24px;display:flex;align-items:center;justify-content:center;border-radius:6px;font-size:.64rem;font-weight:500;color:var(--muted);cursor:pointer;position:relative;border:1px solid transparent;transition:background .1s;}
+.mini-day:hover{background:var(--panel-2);color:var(--text);}
+.mini-day.today{color:var(--orange);border-color:rgba(241,142,0,.4);background:rgba(241,142,0,.07);}
+.mini-day.has-jobs::after{content:'';position:absolute;bottom:2px;left:50%;transform:translateX(-50%);width:2px;height:2px;border-radius:50%;background:var(--orange);}
+.mini-day.done-day::after{background:#5db87a;}
+.mini-day.empty{pointer-events:none;}
+
+/* Week view */
+.week-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:.3rem;margin-bottom:1rem;}
+.week-col{}
+.week-col-head{text-align:center;font-size:.62rem;font-weight:700;text-transform:uppercase;color:var(--muted);padding:.25rem 0;border-bottom:1px solid var(--line);}
+.week-col-head.today-col{color:var(--orange);}
+.week-col-body{min-height:120px;padding:.35rem .25rem;}
+.week-job-pill{background:rgba(241,142,0,.12);border:1px solid rgba(241,142,0,.22);border-radius:7px;padding:.22rem .45rem;font-size:.62rem;font-weight:600;color:var(--orange-2);margin-bottom:.28rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.week-job-pill.done{background:rgba(62,117,80,.12);border-color:rgba(62,117,80,.25);color:#5db87a;}
+
+/* Day view */
+.day-view{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius-sm);overflow:hidden;margin-bottom:1rem;}
+.day-view-head{padding:.65rem 1rem;background:var(--panel-2);border-bottom:1px solid var(--line);font-family:var(--display);font-size:.82rem;font-weight:800;color:var(--text);}
+.day-slot{display:flex;align-items:flex-start;gap:.6rem;padding:.55rem 1rem;border-bottom:1px solid var(--line);}
+.day-slot:last-child{border-bottom:none;}
+.day-slot-time{font-size:.68rem;font-weight:600;color:var(--muted);width:36px;flex-shrink:0;margin-top:.18rem;}
+.day-slot-content{flex:1;}
+.day-job-card{background:rgba(241,142,0,.10);border:1px solid rgba(241,142,0,.22);border-radius:7px;padding:.38rem .65rem;font-size:.78rem;font-weight:600;color:var(--orange-2);}
+.day-job-card.done-card{background:rgba(62,117,80,.10);border-color:rgba(62,117,80,.25);color:#5db87a;}
+.day-job-card.transit-card{background:rgba(59,130,246,.10);border-color:rgba(59,130,246,.25);color:#7db3f5;}
+.day-empty-slot{color:var(--muted);font-size:.76rem;}
+
+/* Detail panel */
+.cal-detail{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius-sm);overflow:hidden;}
+.cal-detail-head{padding:.65rem 1rem;background:var(--panel-2);border-bottom:1px solid var(--line);font-family:var(--display);font-size:.8rem;font-weight:800;color:var(--muted);}
+.cal-detail-job{display:flex;align-items:center;gap:.8rem;padding:.8rem 1rem;border-bottom:1px solid var(--line);}
+.cal-detail-job:last-child{border-bottom:none;}
+.cal-status-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
+.cal-job-info{flex:1;}
+.cal-job-route{font-size:.86rem;font-weight:600;color:var(--text);}
+.cal-job-time{font-size:.74rem;color:var(--muted);margin-top:.08rem;}
+.cal-job-pay{font-family:var(--display);font-size:.92rem;font-weight:800;color:var(--orange);letter-spacing:-.02em;}
+.cal-empty{padding:2rem 1rem;text-align:center;color:var(--muted);font-size:.83rem;}
+
+/* ════════════════════════════════════════════════════════════
+   BUDGET & PROFIT
+   ════════════════════════════════════════════════════════════ */
+.period-row{display:flex;gap:.38rem;margin-bottom:1.1rem;}
+.period-btn{padding:.38rem .85rem;border-radius:var(--pill);font-size:.78rem;font-weight:600;border:1px solid var(--line-strong);color:var(--muted);transition:all .14s;cursor:pointer;}
+.period-btn.active{background:var(--orange);border-color:var(--orange);color:#fff;box-shadow:var(--btn-shadow);}
+.period-btn:hover:not(.active){color:var(--text);}
+
+.budget-hero{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius-sm);padding:1.4rem 1.3rem 1.1rem;text-align:center;margin-bottom:1.1rem;}
+.budget-hero-label{font-size:.68rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:.45rem;}
+.budget-hero-value{font-family:var(--display);font-size:3rem;font-weight:900;color:var(--orange);letter-spacing:-.06em;line-height:1;margin-bottom:.35rem;}
+.budget-hero-sub{font-size:.77rem;color:var(--muted);font-weight:400;}
+
+.budget-kpi-row{display:grid;grid-template-columns:1fr 1fr;gap:.65rem;margin-bottom:1.1rem;}
+.budget-kpi-card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius-sm);padding:1rem 1.1rem;}
+.budget-kpi-label{font-size:.66rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-bottom:.38rem;}
+.budget-kpi-value{font-family:var(--display);font-size:1.5rem;font-weight:900;color:var(--text);letter-spacing:-.045em;}
+.budget-kpi-value.green{color:#5db87a;}
+.budget-kpi-value.red{color:#e07068;}
+
+.bar-chart{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius-sm);padding:1rem 1.1rem .9rem;margin-bottom:1.1rem;}
+.bar-chart-title{font-family:var(--display);font-size:.84rem;font-weight:800;color:var(--text);margin-bottom:.85rem;letter-spacing:-.02em;}
+.bars{display:flex;align-items:flex-end;gap:.3rem;height:72px;}
+.bar-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:.3rem;}
+.bar-fill{width:100%;border-radius:4px 4px 0 0;background:rgba(241,142,0,.22);min-height:3px;}
+.bar-fill.hi{background:var(--orange);}
+.bar-label{font-size:.6rem;color:var(--muted);}
+
+/* Expenses entry */
+.expense-section{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius-sm);overflow:hidden;margin-bottom:1.1rem;}
+.expense-section-header{padding:.75rem 1.1rem;background:var(--panel-2);border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;}
+.expense-section-title{font-family:var(--display);font-size:.88rem;font-weight:800;color:var(--text);letter-spacing:-.025em;display:flex;align-items:center;gap:.4rem;}
+.expense-list{padding:.5rem .8rem;}
+.expense-item{display:flex;align-items:center;gap:.55rem;padding:.45rem .3rem;border-bottom:1px solid var(--line);}
+.expense-item:last-child{border-bottom:none;}
+.expense-item-label{flex:1;font-size:.82rem;color:var(--text);font-weight:500;}
+.expense-item-amount{font-family:var(--display);font-size:.9rem;font-weight:800;color:var(--text);text-align:right;min-width:56px;}
+.expense-item-amount.cost{color:#e07068;}
+.expense-item-amount.income{color:#5db87a;}
+.expense-item-remove{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--muted);transition:color .14s,background .14s;border:1px solid transparent;flex-shrink:0;}
+.expense-item-remove:hover{color:#e07068;background:rgba(180,72,63,.12);border-color:rgba(180,72,63,.22);}
+.expense-add-form{padding:.75rem .9rem;border-top:1px solid var(--line);display:flex;gap:.45rem;flex-wrap:wrap;align-items:center;}
+.expense-input{flex:1;min-width:110px;background:var(--panel-2);border:1px solid var(--line-strong);border-radius:var(--radius-xs);padding:.44rem .78rem;font-size:.82rem;color:var(--text);}
+.expense-input::placeholder{color:var(--muted);}
+.expense-input:focus{border-color:rgba(241,142,0,.5);outline:none;}
+.expense-input.amount-input{max-width:90px;}
+
+/* Van costs section */
+.van-costs-grid{display:grid;grid-template-columns:1fr 1fr;gap:.55rem;padding:.75rem .9rem;}
+.van-cost-row{display:flex;flex-direction:column;gap:.3rem;}
+.van-cost-label{font-size:.66rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);}
+.van-cost-input-wrap{position:relative;}
+.van-cost-input-wrap .prefix{position:absolute;left:.75rem;top:50%;transform:translateY(-50%);font-size:.82rem;font-weight:600;color:var(--muted);}
+.van-cost-input{width:100%;background:var(--panel-2);border:1px solid var(--line-strong);border-radius:var(--radius-xs);padding:.44rem .75rem .44rem 1.5rem;font-size:.84rem;font-weight:600;color:var(--text);}
+.van-cost-input:focus{border-color:rgba(241,142,0,.5);outline:none;}
+.van-costs-total{padding:.6rem .9rem;border-top:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;}
+.van-costs-total-label{font-size:.72rem;font-weight:600;color:var(--muted);}
+.van-costs-total-val{font-family:var(--display);font-size:1.15rem;font-weight:900;color:#e07068;letter-spacing:-.04em;}
+
+/* Profit table */
+.profit-table{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius-sm);overflow:hidden;margin-bottom:1.1rem;}
+.profit-table-head{display:grid;grid-template-columns:1fr auto auto auto;gap:.45rem;padding:.58rem 1rem;border-bottom:1px solid var(--line-strong);font-size:.6rem;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);}
+.profit-row{display:grid;grid-template-columns:1fr auto auto auto;gap:.45rem;align-items:center;padding:.72rem 1rem;border-bottom:1px solid var(--line);font-size:.8rem;transition:background .12s;}
+.profit-row:last-child{border-bottom:none;}
+.profit-row:hover{background:rgba(240,237,234,.03);}
+.profit-route{color:var(--text);font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.profit-gross{color:var(--muted);text-align:right;}
+.profit-cost{color:#e07068;text-align:right;}
+.profit-net{color:#5db87a;font-weight:700;text-align:right;}
+
+/* ════════════════════════════════════════════════════════════
+   SETTINGS
+   ════════════════════════════════════════════════════════════ */
+.settings-group{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius-sm);overflow:hidden;margin-bottom:1.1rem;}
+.settings-group-head{padding:.72rem 1.1rem;background:var(--panel-2);border-bottom:1px solid var(--line);font-family:var(--display);font-size:.88rem;font-weight:800;color:var(--text);display:flex;align-items:center;gap:.4rem;letter-spacing:-.02em;}
+.settings-row{display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:.85rem 1.1rem;border-bottom:1px solid var(--line);}
+.settings-row:last-child{border-bottom:none;}
+.settings-row-label{font-size:.86rem;font-weight:600;color:var(--text);letter-spacing:-.01em;}
+.settings-row-sub{font-size:.74rem;color:var(--muted);margin-top:.1rem;font-weight:400;}
+.settings-input{background:var(--panel-2);border:1px solid var(--line-strong);border-radius:var(--radius-xs);padding:.42rem .8rem;font-size:.82rem;color:var(--text);min-width:140px;text-align:right;}
+.settings-input:focus{border-color:rgba(241,142,0,.5);outline:none;}
+.settings-select{background:var(--panel-2);border:1px solid var(--line-strong);border-radius:var(--radius-xs);padding:.42rem .8rem;font-size:.82rem;color:var(--text);}
+.settings-select:focus{border-color:rgba(241,142,0,.5);outline:none;}
+.settings-toggle{width:44px;height:24px;border-radius:var(--pill);background:var(--panel-2);border:1px solid var(--line-strong);position:relative;cursor:pointer;transition:background .25s,border-color .25s;flex-shrink:0;}
+.settings-toggle.on{background:rgba(62,117,80,.75);border-color:rgba(62,117,80,.9);}
+.settings-toggle .thumb{position:absolute;top:3px;left:3px;width:16px;height:16px;border-radius:50%;background:#fff;box-shadow:0 1px 4px rgba(0,0,0,.25);transition:transform .22s cubic-bezier(.4,0,.2,1);}
+.settings-toggle.on .thumb{transform:translateX(20px);}
+.settings-danger-zone{padding:.85rem 1.1rem;}
+.settings-version{text-align:center;font-size:.72rem;color:var(--muted);padding:1rem 0 0;}
+/* ── SERVICE EDITOR ── */
+.svc-editor-row{padding:.85rem 1.1rem;border-bottom:1px solid var(--line);display:grid;grid-template-columns:auto 1fr;gap:.9rem;align-items:start;}
+.svc-editor-row:last-child{border-bottom:none;}
+.svc-toggle-col{padding-top:.2rem;}
+.svc-fields{display:flex;flex-direction:column;gap:.45rem;}
+.svc-name-row{display:flex;align-items:center;gap:.5rem;}
+.svc-name{font-size:.86rem;font-weight:700;color:var(--text);letter-spacing:-.01em;}
+.svc-input{background:var(--panel-2);border:1px solid var(--line-strong);border-radius:8px;padding:.35rem .7rem;font-size:.8rem;color:var(--text);font-family:var(--font);}
+.svc-input:focus{border-color:rgba(241,142,0,.5);outline:none;}
+.svc-input.price{width:110px;}
+.svc-input.desc{width:100%;}
+.svc-input:disabled{opacity:.4;cursor:not-allowed;}
+.svc-field-label{font-size:.64rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-bottom:.18rem;}
+
+/* ── COLOUR TAGS ─────────────────────────────────────────────── */
+.tag-legend{display:flex;align-items:center;gap:.45rem;flex-wrap:wrap;margin-bottom:.9rem;}
+.tag-chip{display:inline-flex;align-items:center;gap:.35rem;padding:.3rem .7rem;border-radius:var(--pill);font-size:.72rem;font-weight:700;cursor:pointer;border:2px solid transparent;transition:opacity .14s,transform .1s,border-color .14s;user-select:none;}
+.tag-chip:hover{opacity:.85;}
+.tag-chip.active-tag{border-color:rgba(255,255,255,.5);transform:scale(1.04);}
+.tag-chip-dot{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.7);}
+/* per-category colours on week pills */
+.week-job-pill[data-cat="haf"]{background:rgba(241,142,0,.14);border-color:rgba(241,142,0,.30);color:#f5ab2e;}
+.week-job-pill[data-cat="private"]{background:rgba(91,155,213,.14);border-color:rgba(91,155,213,.30);color:#7db3f5;}
+.week-job-pill[data-cat="personal"]{background:rgba(139,146,152,.13);border-color:rgba(139,146,152,.28);color:#a8b0b8;}
+.week-job-pill[data-cat="blocked"]{background:rgba(180,72,63,.13);border-color:rgba(180,72,63,.28);color:#e07068;}
+.week-job-pill[data-cat="other"]{background:rgba(62,117,80,.13);border-color:rgba(62,117,80,.28);color:#5db87a;}
+/* coloured dot on monthly cells */
+.cal-day .cat-dot{width:5px;height:5px;border-radius:50%;flex-shrink:0;}
+/* Tag modal */
+.tag-modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);backdrop-filter:blur(4px);z-index:200;display:flex;align-items:center;justify-content:center;padding:1.5rem;}
+.tag-modal{background:var(--panel);border:1px solid var(--line-strong);border-radius:var(--radius-sm);padding:1.5rem;width:100%;max-width:340px;box-shadow:0 28px 80px rgba(0,0,0,.5);}
+.tag-modal-title{font-family:var(--display);font-size:1rem;font-weight:800;letter-spacing:-.03em;color:var(--text);margin-bottom:1.1rem;}
+.tag-options{display:flex;flex-direction:column;gap:.55rem;margin-bottom:1.2rem;}
+.tag-option{display:flex;align-items:center;gap:.75rem;padding:.65rem .9rem;border-radius:var(--radius-xs);border:2px solid transparent;cursor:pointer;transition:border-color .14s,background .14s;}
+.tag-option:hover{background:var(--panel-2);}
+.tag-option.selected{border-color:rgba(255,255,255,.25);}
+.tag-option-swatch{width:22px;height:22px;border-radius:6px;flex-shrink:0;}
+.tag-option-label{font-size:.86rem;font-weight:600;color:var(--text);}
+.tag-option-count{margin-left:auto;font-size:.72rem;color:var(--muted);}
+.tag-modal-actions{display:flex;gap:.5rem;}
+
+/* ── RESPONSIVE ─────────────────────────────────────────────── */
+@media(max-width:600px){
+  .topbar,.tab-bar{padding:0 1rem;}
+  .tab-panel{padding:1rem 1rem 5rem;}
+  .kpi-row,.stats-strip{gap:.4rem;}
+  .kpi-value{font-size:1.45rem;}
+  .budget-hero-value{font-size:2.2rem;}
+  .quote-inputs{grid-template-columns:1fr;}
+  .quote-swap{display:none;}
+  .quarter-grid{grid-template-columns:1fr;}
+  .profit-table-head,.profit-row{grid-template-columns:1fr auto auto;}
+  .profit-gross{display:none;}
+  .van-costs-grid{grid-template-columns:1fr;}
+  .budget-kpi-row{grid-template-columns:1fr 1fr;}
+}
+</style>
 </head>
 <body>
 
-<div class="nav-scrim" id="navScrim" onclick="closeSidebar()"></div>
+<!-- TOP BAR -->
+<header class="topbar">
+  <a class="topbar-logo" href="#">
+    <div class="topbar-logo-mark">PL</div>
+    <div class="topbar-logo-text">HAF <span>PLNA</span></div>
+  </a>
+  <div class="topbar-actions">
+    <button class="icon-btn" id="themeBtn" onclick="toggleTheme()" title="Toggle day / night">
+      <svg id="themeIcon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+    </button>
+    <div class="avatar">JW</div>
+  </div>
+</header>
 
-<div class="app">
+<!-- STATUS STRIP -->
+<div class="status-strip">
+  <span class="strip-name">James Wilson</span>
+  <span class="sep">·</span><span class="chip chip-delivered">Clever Checked</span>
+  <span class="sep">·</span><span class="chip chip-assigned">Full Van</span>
+  <span class="sep">·</span><span class="chip chip-pending">PLNA Plus</span>
+  <span class="sep">·</span><span style="font-size:.74rem;color:var(--muted)">Mon 7 Jul 2026</span>
+</div>
 
-  <!-- ── SIDEBAR ──────────────────────────────────────────── -->
-  <aside class="sidebar" id="sidebar">
-    <div class="sidebar-top">
-      <div class="brand">
-        <div class="brand-logo">
-          <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-            <polygon fill="rgba(255,255,255,.18)" points="96,50 73,10.2 27,10.2 4,50 27,89.8 73,89.8"/>
-            <rect x="22" y="23" width="11" height="55" fill="#fff" rx="1.5"/>
-            <rect x="44" y="40" width="11" height="38" fill="#fff" rx="1.5"/>
-            <circle cx="59" cy="24" r="7" fill="#fff"/>
-            <polygon fill="#fff" points="52.5,27 65.5,27 59,38"/>
-          </svg>
-        </div>
-        <div class="brand-meta">
-          <div class="brand-name">PLNA</div>
-          <div class="brand-sub">Driver Planning</div>
-        </div>
+<!-- TAB BAR -->
+<nav class="tab-bar">
+  <div class="tab-item active" onclick="switchTab('home',this)">Home</div>
+  <div class="tab-item" onclick="switchTab('today',this)">Today</div>
+  <div class="tab-item" onclick="switchTab('calendar',this)">Calendar</div>
+  <div class="tab-item" onclick="switchTab('budget',this)">Budget &amp; Profit</div>
+  <div class="tab-item" onclick="switchTab('settings',this)">Settings</div>
+</nav>
+
+<!-- ═══ HOME ══════════════════════════════════════════════════ -->
+<div id="tab-home" class="tab-panel active">
+  <div class="avail-hero on" id="availHero">
+    <div><div class="avail-status-label">Driver status</div><div class="avail-status-val on" id="availVal">Available for jobs</div><div class="avail-sub" id="availSub">Visible on KNECT exchange · 3 jobs nearby</div></div>
+    <div class="toggle-track on" id="availToggle" onclick="toggleAvail()"><div class="toggle-thumb"></div></div>
+  </div>
+  <div class="stats-strip">
+    <div class="stat-pill"><div class="stat-pill-val">£187</div><div class="stat-pill-label">Today's pay</div></div>
+    <div class="stat-pill"><div class="stat-pill-val">2</div><div class="stat-pill-label">Jobs done</div></div>
+    <div class="stat-pill"><div class="stat-pill-val">142</div><div class="stat-pill-label">Miles driven</div></div>
+  </div>
+  <div class="section-head"><div><div class="section-title">Route planner</div><div class="section-sub">Multi-stop · optimise order · mileage and drive time</div></div></div>
+  <div class="planner-card">
+    <div class="planner-header">
+      <div class="planner-header-title"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg>Multi-stop route builder</div>
+      <span style="font-size:.7rem;color:var(--muted)" id="stopCount">2 stops</span>
+    </div>
+    <div class="planner-body">
+      <div class="stop-list" id="stopList">
+        <div class="stop-row"><div class="stop-index origin">A</div><input class="stop-input" type="text" placeholder="Collection postcode" id="stop-0"><div class="stop-remove" style="opacity:0;pointer-events:none"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></div></div>
+        <div class="stop-row"><div class="stop-index">B</div><input class="stop-input" type="text" placeholder="Delivery postcode" id="stop-1"><div class="stop-remove" style="opacity:0;pointer-events:none"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></div></div>
       </div>
-      <div class="driver-row">
-        <div class="driver-av">J</div>
-        <div>
-          <div class="driver-n">Jake Thornton</div>
-          <div class="driver-id">DF063893 &middot; Pro Plan</div>
+      <div class="planner-actions">
+        <button class="btn-add-stop" onclick="addStop()"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add stop</button>
+        <button class="btn btn-primary btn-sm" onclick="planRoute()" style="margin-left:auto"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Optimise route</button>
+      </div>
+      <div class="route-result" id="routeResult">
+        <div class="route-result-row">
+          <div class="route-result-stat"><div class="route-result-val" id="rMiles">—</div><div class="route-result-label">Miles</div></div>
+          <div class="route-divider"></div>
+          <div class="route-result-stat"><div class="route-result-val" id="rTime">—</div><div class="route-result-label">Drive time</div></div>
+          <div class="route-divider"></div>
+          <div class="route-result-stat"><div class="route-result-val" id="rFuel">—</div><div class="route-result-label">Est. fuel</div></div>
+          <div class="route-divider"></div>
+          <div class="route-result-stat"><div class="route-result-val" id="rPay">—</div><div class="route-result-label">Guide pay</div></div>
+        </div>
+        <div class="route-result-stops" id="routeStops"></div>
+        <div class="route-result-btns">
+          <button class="btn btn-primary btn-sm" onclick="openNav()"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg>Open in Google Maps</button>
+          <button class="btn btn-ghost btn-sm" onclick="clearRoute()">Clear</button>
         </div>
       </div>
     </div>
-
-    <div class="nav-scroll">
-      <div class="nav-section">
-        <button class="nav-btn active" onclick="switchTab('today',this)">
-          <svg viewBox="0 0 24 24"><path d="M3 8h18M3 8v11a1 1 0 0 0 1 1h16a1 1 0 0 0 1-1V8M3 8V6a1 1 0 0 1 1-1h3m10 0h3a1 1 0 0 1 1 1v2M8 5V3m8 2V3"/></svg>
-          Today
-        </button>
-        <button class="nav-btn" onclick="switchTab('calendar',this)">
-          <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
-          Calendar
-        </button>
-        <button class="nav-btn" onclick="switchTab('routes',this)">
-          <svg viewBox="0 0 24 24"><circle cx="6" cy="19" r="3"/><circle cx="18" cy="5" r="3"/><path d="M6 16V7a6 6 0 0 1 12 0v9"/></svg>
-          Route Planner
-        </button>
-        <button class="nav-btn" onclick="switchTab('diary',this)">
-          <svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
-          Driver Diary
-        </button>
+  </div>
+  <div class="section-head"><div><div class="section-title">Quick job quote</div><div class="section-sub">HAF pricing engine · instant guide price</div></div></div>
+  <div class="quote-card">
+    <div class="quote-card-header">
+      <div class="quote-card-title"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>Postcode to postcode</div>
+      <span class="chip chip-delivered" style="font-size:.62rem">HAF Zone pricing</span>
+    </div>
+    <div class="quote-body">
+      <div class="quote-inputs">
+        <input class="quote-pc-input" id="qFrom" type="text" placeholder="From postcode" maxlength="8">
+        <button class="quote-swap" onclick="swapPostcodes()"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3 4 7l4 4"/><path d="M4 7h16"/><path d="m16 21 4-4-4-4"/><path d="M20 17H4"/></svg></button>
+        <input class="quote-pc-input" id="qTo" type="text" placeholder="To postcode" maxlength="8">
       </div>
-
-      <div class="nav-section">
-        <div class="nav-group-label">Jobs &amp; Routes</div>
-        <button class="nav-btn" onclick="switchTab('planned',this)">
-          <svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
-          Planned Jobs
-        </button>
-        <button class="nav-btn" onclick="switchTab('return',this)">
-          <svg viewBox="0 0 24 24"><path d="M9 14l-4-4 4-4"/><path d="M5 10h11a4 4 0 0 1 0 8h-1"/></svg>
-          Return-Route
-        </button>
-        <button class="nav-btn" onclick="switchTab('empty',this)">
-          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v4m0 4v.01"/></svg>
-          Empty Days
-        </button>
-        <button class="nav-btn" onclick="switchTab('notes',this)">
-          <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
-          Notes
-        </button>
+      <div class="quote-row2">
+        <select class="quote-select" id="qVan"><option value="">Van size</option><option value="small">Small box van</option><option value="half">Half van</option><option value="full" selected>Full van</option><option value="pallet">Pallet / luton</option></select>
+        <select class="quote-select" id="qTime"><option value="same">Same day</option><option value="next">Next day</option><option value="economy">Economy (2–3 days)</option></select>
       </div>
+      <button class="btn btn-primary" style="width:100%;justify-content:center" onclick="getQuote()"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>Get guide price</button>
+      <div class="quote-result" id="quoteResult"><div><div class="quote-price" id="quotePriceVal">£—</div><div class="quote-price-sub" id="quotePriceSub">inc. VAT</div></div><div class="quote-breakdown" id="quoteBreakdown"></div></div>
+    </div>
+  </div>
+  <div class="section-head"><div><div class="section-title">KNECT exchange</div><div class="section-sub">Live jobs available near you</div></div><span class="section-link" onclick="switchTab('today',document.querySelectorAll('.tab-item')[1])">See all</span></div>
+  <div class="exchange-panel">
+    <div class="exchange-header"><div class="exchange-title">Jobs near Manchester</div><div class="live-badge">Live</div></div>
+    <div class="exchange-job"><div class="exchange-job-info"><div class="exchange-job-route">Nottingham → Leicester</div><div class="exchange-job-meta">Full van · 28 mi · Collect 15:00</div></div><div class="exchange-job-right"><div class="exchange-job-pay">£68</div><div class="exchange-job-dist" style="color:var(--orange);font-weight:600">3 mi away</div></div><button class="btn btn-primary btn-sm">Accept</button></div>
+    <div class="exchange-job"><div class="exchange-job-info"><div class="exchange-job-route">Derby → Birmingham</div><div class="exchange-job-meta">Half van · 44 mi · Collect 16:30</div></div><div class="exchange-job-right"><div class="exchange-job-pay">£84</div><div class="exchange-job-dist">11 mi away</div></div><button class="btn btn-ghost btn-sm">View</button></div>
+    <div class="exchange-job"><div class="exchange-job-info"><div class="exchange-job-route">Leeds → York</div><div class="exchange-job-meta">Pallet · 22 mi · Collect 17:00</div></div><div class="exchange-job-right"><div class="exchange-job-pay">£52</div><div class="exchange-job-dist">18 mi away</div></div><button class="btn btn-ghost btn-sm">View</button></div>
+  </div>
+  <div class="section-head"><div class="section-title">Quick actions</div></div>
+  <div class="action-cards">
+    <a href="https://wa.me/441234567890" target="_blank" class="action-card"><div class="action-card-icon"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div><div class="action-card-body"><div class="action-card-title">WhatsApp HAF Dispatch</div><div class="action-card-desc">Message the HAF operations team directly</div></div><div class="action-card-arrow"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></div></a>
+    <a href="https://clever.usehaf.co.uk" class="action-card"><div class="action-card-icon"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div><div class="action-card-body"><div class="action-card-title">CleverPay Compliance</div><div class="action-card-desc">Upload documents · MOT expires 28 Jul</div></div><div class="action-card-arrow"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></div></a>
+  </div>
+</div>
 
-      <div class="nav-section">
-        <div class="nav-group-label">After the Job</div>
-        <button class="nav-btn" onclick="switchTab('pod',this)">
-          <svg viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
-          Proof of Delivery
-        </button>
-        <button class="nav-btn" onclick="switchTab('money',this)">
-          <svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-          Money &amp; Payouts
-        </button>
-        <button class="nav-btn" onclick="switchTab('reports',this)">
-          <svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
-          Reports &amp; Analytics
-        </button>
-      </div>
-
-      <div class="nav-section">
-        <div class="nav-group-label">Pro</div>
-        <button class="nav-btn" onclick="switchTab('ai',this)">
-          <svg viewBox="0 0 24 24"><path d="M12 2a2 2 0 0 1 2 2c0 .74-.4 1.39-1 1.73V7h1a7 7 0 0 1 7 7h1a1 1 0 0 1 0 2h-1v1a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-1H2a1 1 0 0 1 0-2h1a7 7 0 0 1 7-7h1V5.73c-.6-.34-1-.99-1-1.73a2 2 0 0 1 2-2z"/></svg>
-          JUDD AI
-        </button>
-        <button class="nav-btn" onclick="switchTab('landing',this)">
-          <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-          Driver Landing Page
-        </button>
-      </div>
-
-      <div class="nav-section">
-        <div class="nav-group-label">Network</div>
-        <button class="nav-btn" onclick="switchTab('rewards',this)">
-          <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11"/></svg>
-          My Rewards
-        </button>
-        <button class="nav-btn" onclick="switchTab('pass',this)">
-          <svg viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
-          Network Pass
-        </dutton>
-      </div>
-
-      <div class="nav-section">
-        <div class="nav-group-label">Account</div>
-        <button class="nav-btn" onclick="switchTab('compliance',this)">
-          <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-          Compliance &amp; Profile
-        </button>
-        <button class="nav-btn" onclick="switchTab('comms',this)">
-          <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-          Communications
-        </button>
-        <button class="nav-btn" onclick="switchTab('billing',this)">
-          <svg viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
-          Plans &amp; Billing
-        </button>
+<!-- ═══ TODAY ═════════════════════════════════════════════════ -->
+<div id="tab-today" class="tab-panel">
+  <div class="kpi-row">
+    <div class="kpi-card"><div class="kpi-label">Today's pay</div><div class="kpi-value orange">£187</div><div class="kpi-delta up">↑ 2 jobs done</div></div>
+    <div class="kpi-card"><div class="kpi-label">Miles driven</div><div class="kpi-value">142</div><div class="kpi-delta">+38 empty mi</div></div>
+    <div class="kpi-card"><div class="kpi-label">Net profit</div><div class="kpi-value orange">£124</div><div class="kpi-delta">after fuel</div></div>
+  </div>
+  <div class="compliance-card">
+    <div class="comp-item"><div class="comp-dot ok"></div><span class="comp-label">Licence</span><span class="comp-val">Valid</span></div>
+    <div class="comp-item"><div class="comp-dot ok"></div><span class="comp-label">Insurance</span><span class="comp-val">Active</span></div>
+    <div class="comp-item"><div class="comp-dot warn"></div><span class="comp-label">MOT</span><span class="comp-val">Exp 28 Jul</span></div>
+    <div class="comp-item"><div class="comp-dot ok"></div><span class="comp-label">O-Licence</span><span class="comp-val">Clear</span></div>
+    <a href="https://clever.usehaf.co.uk" class="btn btn-ghost btn-sm" style="margin-left:auto"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Manage docs</a>
+  </div>
+  <div class="section-head"><div><div class="section-title">Active job</div></div><span class="chip chip-transit">En route</span></div>
+  <div class="job-card active-job">
+    <div class="job-card-header"><span class="job-card-id">HAF-38291</span><span style="font-size:.76rem;font-weight:600;color:var(--orange-2)">ETA 14:22</span></div>
+    <div><div class="job-card-route">Manchester <span class="arr">→</span> Sheffield</div><div class="job-card-meta">M1 1AB → S1 2PP · Full van · 38 mi</div></div>
+    <div class="job-card-footer">
+      <div class="job-card-price">£95 <span class="job-card-price-sub">fuel £18 · net £77</span></div>
+      <div class="job-actions">
+        <a href="https://maps.google.com/?q=Sheffield+S1+2PP" target="_blank" class="btn btn-primary btn-sm"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg>Navigate</a>
+        <a href="https://wa.me/441234567890" target="_blank" class="btn btn-ghost btn-sm"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>WhatsApp</a>
+        <button class="btn btn-ghost btn-sm" onclick="alert('Marked complete.')"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Complete</button>
       </div>
     </div>
+  </div>
+  <div class="section-head"><div><div class="section-title">Available jobs nearby</div><div class="section-sub">3 jobs on the KNECT exchange</div></div><a href="#" class="section-link">View all</a></div>
+  <div class="job-card"><div class="job-card-header"><div><div class="job-card-route">Nottingham <span class="arr">→</span> Leicester</div><div class="job-card-meta">Full van · 28 mi · Collect 15:00</div></div><div class="dist-badge closest">Closest · 3 mi</div></div><div class="job-card-footer"><div class="job-card-price">£68 <span class="job-card-price-sub">est. net £52</span></div><div class="job-actions"><button class="btn btn-primary btn-sm">Accept job</button></div></div></div>
+  <div class="job-card"><div class="job-card-header"><div><div class="job-card-route">Derby <span class="arr">→</span> Birmingham</div><div class="job-card-meta">Half van · 44 mi · Collect 16:30</div></div><div class="dist-badge">11 mi away</div></div><div class="job-card-footer"><div class="job-card-price">£84 <span class="job-card-price-sub">est. net £66</span></div><div class="job-actions"><button class="btn btn-ghost btn-sm">View details</button></div></div></div>
+</div>
 
-    <div class="sidebar-foot">
-      <div class="avail-row">
-        <span class="avail-label">Available</span>
-        <button class="avail-toggle on" id="availToggle" onclick="toggleAvail()">
-          <span class="knob"></span>
-        </button>
-      </div>
-      <button class="theme-btn" onclick="document.body.classList.toggle('dark')" title="Toggle dark mode">
-        <svg class="ico-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
-        <svg class="ico-moon" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+<!-- ═══ CALENDAR ══════════════════════════════════════════════ -->
+<div id="tab-calendar" class="tab-panel">
+
+  <!-- Tag legend -->
+  <div class="tag-legend" id="tagLegend"></div>
+
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.75rem;flex-wrap:wrap;gap:.5rem;">
+    <div class="cal-view-bar">
+      <button class="cal-view-btn" onclick="setCalView('day',this)">Day</button>
+      <button class="cal-view-btn" onclick="setCalView('week',this)">Week</button>
+      <button class="cal-view-btn active" onclick="setCalView('month',this)">Month</button>
+      <button class="cal-view-btn" onclick="setCalView('quarter',this)">Quarter</button>
+    </div>
+    <div style="display:flex;align-items:center;gap:.5rem;">
+      <button class="btn btn-ghost btn-sm" onclick="openTagModal(null)" style="font-size:.72rem">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
+        Tags
       </button>
-    </div>
-  </aside>
-
-  <!-- ── WORKSPACE ─────────────────────────────────────────── -->
-  <div class="workspace">
-    <div class="topbar">
-      <div class="topbar-left">
-        <button class="nav-toggle" id="navToggle" onclick="openSidebar()">
-          <svg viewBox="0 0 24 24"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
-        </button>
-        <span>HAF PLNA</span>
-        <span class="topbar-sep">/</span>
-        <span class="crumb-active" id="topbar-crumb">Today</span>
-      </div>
-      <div class="topbar-right">
-        <span class="status-chip orange-chip"><span class="dot"></span>PLNA Pro</span>
-        <span class="status-chip"><span class="dot"></span>HAF X v2.1.0</span>
+      <div class="cal-header" style="margin-bottom:0">
+        <div class="cal-month-label" id="calMonthLabel">July 2026</div>
+        <div class="cal-nav" style="margin-left:.75rem">
+          <button class="cal-nav-btn" onclick="calShift(-1)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></button>
+          <button class="cal-nav-btn" onclick="calShift(1)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></button>
+        </div>
       </div>
     </div>
+  </div>
 
-    <div class="canvas">
-      <div class="canvas-inner" id="content">
+  <div id="calViewMount"></div>
 
-        <div id="tab-today"></div>
-        <div id="tab-calendar" style="display:none"></div>
-        <div id="tab-routes" style="display:none"></div>
-        <div id="tab-diary" style="display:none"></div>
-        <div id="tab-planned" style="display:none"></div>
-        <div id="tab-return" style="display:none"></div>
-        <div id="tab-empty" style="display:none"></div>
-        <div id="tab-notes" style="display:none"></div>
-        <div id="tab-pod" style="display:none"></div>
-        <div id="tab-money" style="display:none"></div>
-        <div id="tab-reports" style="display:none"></div>
-        <div id="tab-ai" style="display:none"></div>
-        <div id="tab-landing" style="display:none"></div>
-        <div id="tab-rewards" style="display:none"></div>
-        <div id="tab-pass" style="display:none"></div>
-        <div id="tab-compliance" style="display:none"></div>
-        <div id="tab-comms" style="display:none"></div>
-        <div id="tab-billing" style="display:none"></div>
-      </div>
+  <div class="cal-detail" id="calDetail">
+    <div class="cal-detail-head" id="calDetailHead">Monday 7 July — 2 jobs</div>
+    <div id="calDetailBody">
+      <div class="cal-detail-job"><div class="cal-status-dot" style="background:#5db87a"></div><div class="cal-job-info"><div class="cal-job-route">Manchester → Leeds</div><div class="cal-job-time">Collected 08:30 · Delivered 10:15</div></div><div class="cal-job-pay">£92</div></div>
+      <div class="cal-detail-job"><div class="cal-status-dot" style="background:#7db3f5;box-shadow:0 0 0 2px rgba(125,179,245,.25)"></div><div class="cal-job-info"><div class="cal-job-route">Manchester → Sheffield</div><div class="cal-job-time">Collected 12:00 · ETA 14:22</div></div><div class="cal-job-pay">£95</div></div>
     </div>
   </div>
 </div>
-<!-- MOBILE BOTTOM NAV -->
-<nav class="bottom-nav">
-  <div class="bottom-nav-inner">
-    <button class="bottom-nav-btn active" onclick="switchTab('today',this)" id="bnav-today">
-      <svg viewBox="0 0 24 24"><path d="M3 8h18M3 8v11a1 1 0 0 0 1 1h16a1 1 0 0 0 1-1V8M3 8V6a1 1 0 0 1 1-1h3m10 0h3a1 1 0 0 1 1 1v2M8 5V3m8 2V3"/></svg>
-      Today
-    </button>
-    <button class="bottom-nav-btn" onclick="switchTab('calendar',this)" id="bnav-calendar">
-      <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
-      Calendar
-    </button>
-    <button class="bottom-nav-btn" onclick="switchTab('money',this)" id="bnav-money">
-      <svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-      Money
-    </button>
-    <button class="bottom-nav-btn" onclick="switchTab('reports',this)" id="bnav-reports">
-      <svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
-      Reports
-    </button>
-    <button class="bottom-nav-btn" onclick="switchTab('compliance',this)" id="bnav-compliance">
-      <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-      Compliance
-    </button>
-  </div>
-</nav>
 
-<script src="tabs-a.js"></script>
-<script src="tabs-b.js"></script>
-<script src="tabs-b2.js"></script>
-<script src="tabs-c.js"></script>
-<script src="tabs-d.js"></script>
+<!-- TAG MODAL -->
+<div class="tag-modal-overlay" id="tagModalOverlay" style="display:none" onclick="if(event.target===this)closeTagModal()">
+  <div class="tag-modal">
+    <div class="tag-modal-title">Job categories &amp; colour tags</div>
+    <div class="tag-options" id="tagOptions"></div>
+    <div class="tag-modal-actions">
+      <button class="btn btn-ghost btn-sm" onclick="closeTagModal()">Close</button>
+      <button class="btn btn-primary btn-sm" style="margin-left:auto" onclick="addCustomTag()">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        New tag
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ BUDGET & PROFIT ═══════════════════════════════════════ -->
+<div id="tab-budget" class="tab-panel">
+  <div class="period-row">
+    <button class="period-btn active" onclick="setPeriod('week',this)">This week</button>
+    <button class="period-btn" onclick="setPeriod('month',this)">This month</button>
+  </div>
+
+  <div class="budget-hero">
+    <div class="budget-hero-label">Net profit after all costs</div>
+    <div class="budget-hero-value" id="budgetNet">£284</div>
+    <div class="budget-hero-sub" id="budgetSub">gross £617 · fuel £205 · van costs £128 · expenses £0</div>
+  </div>
+
+  <div class="budget-kpi-row">
+    <div class="budget-kpi-card"><div class="budget-kpi-label">Gross earnings</div><div class="budget-kpi-value" id="budgetGross">£617</div></div>
+    <div class="budget-kpi-card"><div class="budget-kpi-label">Fuel cost</div><div class="budget-kpi-value red" id="budgetFuel">£205</div></div>
+    <div class="budget-kpi-card"><div class="budget-kpi-label">Van costs (pro-rata)</div><div class="budget-kpi-value red" id="budgetVanCosts">£128</div></div>
+    <div class="budget-kpi-card"><div class="budget-kpi-label">Avg per job</div><div class="budget-kpi-value green" id="budgetAvg">£31.60</div></div>
+  </div>
+
+  <div class="bar-chart">
+    <div class="bar-chart-title" id="barTitle">Earnings by day — this week</div>
+    <div class="bars" id="bars"></div>
+  </div>
+
+  <!-- Weekly receipts / expenses -->
+  <div class="expense-section">
+    <div class="expense-section-header">
+      <div class="expense-section-title">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+        Receipts &amp; expenses
+      </div>
+      <span style="font-size:.72rem;color:var(--muted)" id="expenseTotal">Total: £0</span>
+    </div>
+    <div class="expense-list" id="expenseList">
+      <div style="padding:.85rem .3rem;text-align:center;font-size:.8rem;color:var(--muted)">No expenses logged this week</div>
+    </div>
+    <div class="expense-add-form">
+      <input class="expense-input" type="text" id="expLabel" placeholder="Description (e.g. Fuel receipt, Tolls)">
+      <div style="position:relative;flex-shrink:0">
+        <span style="position:absolute;left:.65rem;top:50%;transform:translateY(-50%);font-size:.8rem;color:var(--muted);pointer-events:none">£</span>
+        <input class="expense-input amount-input" type="number" id="expAmount" placeholder="0.00" style="padding-left:1.4rem">
+      </div>
+      <select class="quote-select" id="expType" style="min-width:90px;flex:0 0 auto">
+        <option value="cost">Expense</option>
+        <option value="income">Income</option>
+      </select>
+      <button class="btn btn-primary btn-sm" onclick="addExpense()">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Add
+      </button>
+    </div>
+  </div>
+
+  <!-- Van costs -->
+  <div class="expense-section">
+    <div class="expense-section-header">
+      <div class="expense-section-title">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+        Van &amp; running costs
+      </div>
+      <span style="font-size:.72rem;color:var(--muted)">Monthly · auto pro-rata</span>
+    </div>
+    <div class="van-costs-grid">
+      <div class="van-cost-row"><div class="van-cost-label">Finance payment</div><div class="van-cost-input-wrap"><span class="prefix">£</span><input class="van-cost-input" type="number" id="vc-finance" value="320" oninput="recalcVanCosts()"></div></div>
+      <div class="van-cost-row"><div class="van-cost-label">Insurance</div><div class="van-cost-input-wrap"><span class="prefix">£</span><input class="van-cost-input" type="number" id="vc-insurance" value="95" oninput="recalcVanCosts()"></div></div>
+      <div class="van-cost-row"><div class="van-cost-label">Maintenance budget</div><div class="van-cost-input-wrap"><span class="prefix">£</span><input class="van-cost-input" type="number" id="vc-maintenance" value="60" oninput="recalcVanCosts()"></div></div>
+      <div class="van-cost-row"><div class="van-cost-label">Road tax</div><div class="van-cost-input-wrap"><span class="prefix">£</span><input class="van-cost-input" type="number" id="vc-tax" value="25" oninput="recalcVanCosts()"></div></div>
+      <div class="van-cost-row"><div class="van-cost-label">Breakdown cover</div><div class="van-cost-input-wrap"><span class="prefix">£</span><input class="van-cost-input" type="number" id="vc-breakdown" value="12" oninput="recalcVanCosts()"></div></div>
+      <div class="van-cost-row"><div class="van-cost-label">Other (monthly)</div><div class="van-cost-input-wrap"><span class="prefix">£</span><input class="van-cost-input" type="number" id="vc-other" value="0" oninput="recalcVanCosts()"></div></div>
+    </div>
+    <div class="van-costs-total">
+      <div><div class="van-costs-total-label">Monthly total</div><div style="font-size:.7rem;color:var(--muted);margin-top:.1rem">Weekly: £<span id="vanWeekly">128</span></div></div>
+      <div class="van-costs-total-val">£<span id="vanMonthly">512</span> / mo</div>
+    </div>
+  </div>
+
+  <!-- Per-job profit table -->
+  <div class="profit-table">
+    <div class="profit-table-head"><span>Route</span><span>Gross</span><span>Fuel</span><span>Profit</span></div>
+    <div id="profitRows"></div>
+  </div>
+
+</div>
+
+<!-- ═══ SETTINGS ══════════════════════════════════════════════ -->
+<div id="tab-settings" class="tab-panel">
+
+  <div class="settings-group">
+    <div class="settings-group-head">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      Driver profile
+    </div>
+    <div class="settings-row"><div><div class="settings-row-label">Full name</div></div><input class="settings-input" type="text" value="James Wilson"></div>
+    <div class="settings-row"><div><div class="settings-row-label">HAF username</div></div><input class="settings-input" type="text" value="JW012390" readonly style="color:var(--muted)"></div>
+    <div class="settings-row"><div><div class="settings-row-label">Phone number</div></div><input class="settings-input" type="tel" value="+44 7801 239012"></div>
+    <div class="settings-row"><div><div class="settings-row-label">Email</div></div><input class="settings-input" type="email" value="james@email.com"></div>
+    <div class="settings-row"><div><div class="settings-row-label">Home postcode</div></div><input class="settings-input" type="text" value="M1 1AB"></div>
+  </div>
+
+  <div class="settings-group">
+    <div class="settings-group-head">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+      Van details
+    </div>
+    <div class="settings-row"><div><div class="settings-row-label">Van make &amp; model</div></div><input class="settings-input" type="text" value="Ford Transit Custom"></div>
+    <div class="settings-row"><div><div class="settings-row-label">Registration</div></div><input class="settings-input" type="text" value="AB21 XYZ"></div>
+    <div class="settings-row"><div><div class="settings-row-label">Van size</div></div><select class="settings-select"><option selected>Full van</option><option>Half van</option><option>Small box van</option><option>Luton / pallet</option></select></div>
+    <div class="settings-row"><div><div class="settings-row-label">Fuel type</div></div><select class="settings-select"><option selected>Diesel</option><option>Petrol</option><option>Electric</option><option>Hybrid</option></select></div>
+    <div class="settings-row"><div><div class="settings-row-label">Fuel efficiency (MPG)</div><div class="settings-row-sub">Used to estimate fuel costs in quotes</div></div><input class="settings-input" type="number" value="32" style="max-width:80px"></div>
+  </div>
+
+  <!-- ── MY SERVICES ── rendered by JS ── -->
+  <div class="settings-group" id="servicesGroup">
+    <div class="settings-group-head">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+      My services
+    </div>
+    <div id="servicesEditorBody"><!-- filled by JS --></div>
+    <div style="padding:.75rem 1.1rem;border-top:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:.75rem;flex-wrap:wrap;">
+      <div style="font-size:.72rem;color:var(--muted);line-height:1.5">These appear on your public booking page for customers to see and select.</div>
+      <button class="btn btn-primary btn-sm" onclick="saveServices()">Save services</button>
+    </div>
+    <div id="servicesSaved" style="display:none;padding:.5rem 1.1rem;font-size:.74rem;color:#5db87a;border-top:1px solid var(--line)">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:.3rem"><polyline points="20 6 9 17 4 12"/></svg>Saved — your booking page is updated.
+    </div>
+  </div>
+
+  <div class="settings-group">
+    <div class="settings-group-head">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      Compliance &amp; account
+    </div>
+    <div class="settings-row"><div><div class="settings-row-label">PLNA plan</div><div class="settings-row-sub" id="planSubLabel">Current: Plus — £10/mo</div></div><button class="btn btn-ghost btn-sm" id="planUpgradeBtn">Upgrade to Pro</button></div>
+    <!-- Booking link row — rendered by JS based on plan -->
+    <div class="settings-row" id="bookingLinkRow"></div>
+    <div class="settings-row"><div><div class="settings-row-label">CleverPay account</div><div class="settings-row-sub">JW012390 · Clever Checked</div></div><a href="https://clever.usehaf.co.uk" class="btn btn-ghost btn-sm">Open CleverPay</a></div>
+    <div class="settings-row"><div><div class="settings-row-label">KNECT access</div><div class="settings-row-sub">Linked and active</div></div><span class="chip chip-delivered" style="font-size:.68rem">Connected</span></div>
+  </div>
+
+  <div class="settings-group">
+    <div class="settings-group-head">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+      Notifications
+    </div>
+    <div class="settings-row"><div><div class="settings-row-label">New jobs nearby</div><div class="settings-row-sub">Alert when a job posts within your radius</div></div><div class="settings-toggle on" onclick="this.classList.toggle('on')"><div class="thumb"></div></div></div>
+    <div class="settings-row"><div><div class="settings-row-label">Compliance reminders</div><div class="settings-row-sub">Alerts for expiring documents</div></div><div class="settings-toggle on" onclick="this.classList.toggle('on')"><div class="thumb"></div></div></div>
+    <div class="settings-row"><div><div class="settings-row-label">Payout notifications</div><div class="settings-row-sub">When CleverPay processes a payment</div></div><div class="settings-toggle on" onclick="this.classList.toggle('on')"><div class="thumb"></div></div></div>
+    <div class="settings-row"><div><div class="settings-row-label">WhatsApp dispatch alerts</div><div class="settings-row-sub">Receive job updates via WhatsApp</div></div><div class="settings-toggle" onclick="this.classList.toggle('on')"><div class="thumb"></div></div></div>
+  </div>
+
+  <div class="settings-group">
+    <div class="settings-group-head">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/></svg>
+      Display
+    </div>
+    <div class="settings-row"><div><div class="settings-row-label">Dark mode</div></div><div class="settings-toggle on" id="darkModeToggle" onclick="toggleTheme();this.classList.toggle('on')"><div class="thumb"></div></div></div>
+    <div class="settings-row"><div><div class="settings-row-label">Distance unit</div></div><select class="settings-select"><option selected>Miles (mi)</option><option>Kilometres (km)</option></select></div>
+  </div>
+
+  <div class="settings-group">
+    <div class="settings-group-head" style="color:#e07068">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      Account
+    </div>
+    <div class="settings-danger-zone" style="display:flex;gap:.5rem;flex-wrap:wrap">
+      <button class="btn btn-ghost btn-sm">Change password</button>
+      <button class="btn btn-danger btn-sm" onclick="signOut()">Sign out</button>
+    </div>
+  </div>
+
+  <div class="settings-version">HAF PLNA v4.1 · Powered by HAF X · <a href="https://usehaf.co.uk">usehaf.co.uk</a></div>
+</div>
+
 <script>
-var TABS=['today','calendar','routes','diary','planned','return','empty','notes','pod','money','reports','ai','landing','rewards','pass','compliance','comms','billing'];
-var CRUMBS={today:'Today',calendar:'Calendar',routes:'Route Planner',diary:'Driver Diary',planned:'Planned Jobs',return:'Return-Route',empty:'Empty Days',notes:'Notes',pod:'Proof of Delivery',money:'Money & Payouts',reports:'Reports & Analytics',ai:'JUDD AI',landing:'Driver Landing Page',rewards:'My Rewards',pass:'Network Pass',compliance:'Compliance & Profile',comms:'Communications',billing:'Plans & Billing'};
-function switchTab(key){TABS.forEach(function(t){var el=document.getElementById('tab-'+t);if(el)el.style.display=t===key?'':'none';});document.querySelectorAll('.nav-btn').forEach(function(b){b.classList.remove('active');});document.querySelectorAll('.bottom-nav-btn').forEach(function(b){b.classList.remove('active');});var clicked=event&&event.currentTarget;if(clicked){if(clicked.classList.contains('nav-btn'))clicked.classList.add('active');else if(clicked.classList.contains('bottom-nav-btn'))clicked.classList.add('active');}var crumb=document.getElementById('topbar-crumb');if(crumb)crumb.textContent=CRUMBS[key]||key;closeSidebar();}
-function openSidebar(){document.getElementById('sidebar').classList.add('open');document.getElementById('navScrim').classList.add('show');document.body.classList.add('nav-open');}
-function closeSidebar(){document.getElementById('sidebar').classList.remove('open');document.getElementById('navScrim').classList.remove('show');document.body.classList.remove('nav-open');}
-function toggleAvail(){var t=document.getElementById('availToggle');t.classList.toggle('on');}
+/* ── AUTH GUARD ─────────────────────────────────────────────── */
+if(localStorage.getItem('plna-auth')!=='1') window.location.href='login.html';
+function signOut(){localStorage.removeItem('plna-auth');localStorage.removeItem('plna-user');window.location.href='login.html';}
+const _user=localStorage.getItem('plna-user')||'JW012390';
+/* ── PLAN + BOOKING LINK ─────────────────────────────────────── */
+// 'basic' | 'plus' | 'pro'  — in production this comes from CleverPay/Supabase
+const PLNA_PLAN='plus';
+const PLAN_LABELS={basic:'PLNA Lite — Free',plus:'PLNA Plus — £10/mo',pro:'PLNA Pro — £50/mo'};
+const PLAN_CAP={basic:10,plus:50,pro:null};
+// Seed: confirmed bookings this month (cancellations don't count toward cap)
+const CONFIRMED_THIS_MONTH=3;
+const planSub=document.getElementById('planSubLabel');
+const planBtn=document.getElementById('planUpgradeBtn');
+if(planSub) planSub.textContent='Current plan: '+PLAN_LABELS[PLNA_PLAN];
+if(planBtn){
+  if(PLNA_PLAN==='pro'){planBtn.textContent='Pro plan active';planBtn.disabled=true;planBtn.style.opacity='.5';}
+  else if(PLNA_PLAN==='plus'){planBtn.textContent='Upgrade to Pro — £50/mo';}
+  else{planBtn.textContent='Upgrade to Plus — £10/mo';planBtn.classList.replace('btn-ghost','btn-primary');}
+}
+const _bookLink=location.origin+location.pathname.replace('dashboard.html','')+'book.html?driver='+_user;
+const _bookRow=document.getElementById('bookingLinkRow');
+if(_bookRow){
+  const cap=PLAN_CAP[PLNA_PLAN];
+  if(PLNA_PLAN==='basic'){
+    const pct=Math.min(CONFIRMED_THIS_MONTH/cap*100,100);
+    _bookRow.style.flexDirection='column';_bookRow.style.alignItems='stretch';_bookRow.style.gap='.7rem';
+    _bookRow.innerHTML=`
+      <div style="display:flex;align-items:center;justify-content:space-between">
+        <div class="settings-row-label">My booking link</div>
+        <button class="btn btn-primary btn-sm" onclick="copyBookLink()">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+          <span id="copyBtnLabel">Copy link</span>
+        </button>
+      </div>
+      <div style="font-size:.72rem;color:var(--orange);word-break:break-all">book.html?driver=${_user}</div>
+      <div style="background:rgba(241,142,0,.06);border:1px solid rgba(241,142,0,.18);border-radius:10px;padding:.65rem .85rem;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.45rem;">
+          <div style="font-size:.74rem;font-weight:600;color:var(--text)">Confirmed bookings this month</div>
+          <div style="font-family:var(--display);font-size:.9rem;font-weight:900;color:var(--orange);letter-spacing:-.04em">${CONFIRMED_THIS_MONTH}/${cap}</div>
+        </div>
+        <div style="height:5px;border-radius:999px;background:var(--panel-2);overflow:hidden;margin-bottom:.4rem">
+          <div style="height:100%;width:${pct}%;background:var(--orange);border-radius:999px;transition:width .3s"></div>
+        </div>
+        <div style="font-size:.68rem;color:var(--muted)">Cancelled bookings don't count toward your limit · Resets monthly</div>
+      </div>
+      <div style="display:flex;align-items:center;justify-content:space-between;background:var(--panel-2);border:1px solid var(--line);border-radius:10px;padding:.6rem .85rem;">
+        <div>
+          <div style="font-size:.76rem;font-weight:700;color:var(--text)">Unlock full booking features</div>
+          <div style="font-size:.7rem;color:var(--muted);margin-top:.1rem">Calendar, 4 services, WhatsApp alerts, 50 bookings/mo</div>
+        </div>
+        <a href="https://clever.usehaf.co.uk" style="display:inline-flex;align-items:center;padding:.36rem .85rem;border-radius:999px;font-size:.76rem;font-weight:700;background:var(--orange);color:#fff;flex-shrink:0">Plus — £10/mo</a>
+      </div>`;
+  } else if(PLNA_PLAN==='plus'){
+    _bookRow.innerHTML=`
+      <div>
+        <div class="settings-row-label">My booking link</div>
+        <div style="font-size:.72rem;color:var(--orange);margin-top:.1rem;word-break:break-all">book.html?driver=${_user}</div>
+        <div style="font-size:.7rem;color:var(--muted);margin-top:.25rem">${CONFIRMED_THIS_MONTH} of ${cap} confirmed bookings used this month · cancellations don't count</div>
+      </div>
+      <button class="btn btn-primary btn-sm" onclick="copyBookLink()">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+        <span id="copyBtnLabel">Copy link</span>
+      </button>`;
+  } else {
+    _bookRow.innerHTML=`
+      <div>
+        <div class="settings-row-label">My booking link</div>
+        <div style="font-size:.72rem;color:var(--orange);margin-top:.1rem;word-break:break-all">book.html?driver=${_user}</div>
+        <div style="font-size:.7rem;color:var(--muted);margin-top:.25rem">Unlimited bookings · Pro plan · branding toggle available</div>
+      </div>
+      <button class="btn btn-primary btn-sm" onclick="copyBookLink()">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+        <span id="copyBtnLabel">Copy link</span>
+      </button>`;
+  }
+}
+function copyBookLink(){
+  navigator.clipboard.writeText(_bookLink).then(()=>{
+    const lbl=document.getElementById('copyBtnLabel');
+    lbl.textContent='Copied!';
+    setTimeout(()=>{lbl.textContent='Copy link';},2200);
+  }).catch(()=>{prompt('Copy this link:',_bookLink);});
+}
+/* ── THEME ──────────────────────────────────────────────────── */
+const MOON=`<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>`;
+const SUN=`<circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>`;
+const st=localStorage.getItem('plna-theme')||'dark';
+document.documentElement.dataset.theme=st;
+document.getElementById('themeIcon').innerHTML=st==='dark'?MOON:SUN;
+function toggleTheme(){const n=document.documentElement.dataset.theme==='dark'?'light':'dark';document.documentElement.dataset.theme=n;localStorage.setItem('plna-theme',n);document.getElementById('themeIcon').innerHTML=n==='dark'?MOON:SUN;}
+
+/* ── MY SERVICES ─────────────────────────────────────────────── */
+// HAF DB schema — each row maps 1:1 to plna_driver_services table
+// Fields: driver_username, service_id, enabled, name, price_label, description, updated_at
+const SVC_DEFAULTS=[
+  {id:'same-day', name:'Same-day delivery', price:'From £45', desc:'Collect and deliver within hours · full or half van', enabled:true},
+  {id:'multi',    name:'Multi-stop route',  price:'From £75', desc:'Up to 8 stops · optimised order',                 enabled:true},
+  {id:'man-van',  name:'Man & van',         price:'From £90', desc:'House moves · furniture · heavy items',           enabled:false},
+  {id:'pallet',   name:'Pallet / luton',    price:'From £110',desc:'Tail lift available · pallet network',            enabled:false},
+];
+function loadServices(){
+  try{const raw=localStorage.getItem('plna-services-'+_user);if(raw) return JSON.parse(raw);}catch(e){}
+  return SVC_DEFAULTS.map(s=>({...s}));
+}
+function saveServices(){
+  const rows=document.querySelectorAll('.svc-editor-row[data-svc-id]');
+  const config=Array.from(rows).map(row=>{
+    const id=row.dataset.svcId;
+    const def=SVC_DEFAULTS.find(s=>s.id===id)||{};
+    return {
+      id,
+      name:def.name,
+      enabled:row.querySelector('.settings-toggle').classList.contains('on'),
+      price:row.querySelector('.svc-input.price').value.trim()||def.price,
+      desc:row.querySelector('.svc-input.desc').value.trim()||def.desc,
+      updated_at:new Date().toISOString(),
+      driver_username:_user,
+    };
+  });
+  localStorage.setItem('plna-services-'+_user,JSON.stringify(config));
+  // In production: POST config to /api/plna/services — same shape, no reshaping needed
+  const banner=document.getElementById('servicesSaved');
+  if(banner){banner.style.display='block';setTimeout(()=>{banner.style.display='none';},3000);}
+}
+function renderServicesEditor(){
+  const services=loadServices();
+  const body=document.getElementById('servicesEditorBody');
+  if(!body) return;
+  body.innerHTML=services.map(s=>`
+    <div class="svc-editor-row" data-svc-id="${s.id}">
+      <div class="svc-toggle-col">
+        <div class="settings-toggle${s.enabled?' on':''}" onclick="this.classList.toggle('on');updateSvcDisabled(this)"><div class="thumb"></div></div>
+      </div>
+      <div class="svc-fields">
+        <div class="svc-name-row">
+          <div class="svc-name">${s.name}</div>
+        </div>
+        <div>
+          <div class="svc-field-label">Starting price</div>
+          <input class="svc-input price" type="text" value="${s.price}"${s.enabled?'':' disabled'} placeholder="e.g. From £45">
+        </div>
+        <div>
+          <div class="svc-field-label">Short description</div>
+          <input class="svc-input desc" type="text" value="${s.desc}"${s.enabled?'':' disabled'} placeholder="What does this service include?">
+        </div>
+      </div>
+    </div>`).join('');
+}
+function updateSvcDisabled(toggle){
+  const row=toggle.closest('.svc-editor-row');
+  const on=toggle.classList.contains('on');
+  row.querySelectorAll('.svc-input').forEach(i=>{i.disabled=!on;});
+}
+renderServicesEditor();
+
+/* ── TABS ───────────────────────────────────────────────────── */
+function switchTab(id,el){document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));document.querySelectorAll('.tab-item').forEach(t=>t.classList.remove('active'));document.getElementById('tab-'+id).classList.add('active');if(el)el.classList.add('active');}
+
+/* ── AVAILABILITY ───────────────────────────────────────────── */
+let avail=true;
+function toggleAvail(){avail=!avail;const h=document.getElementById('availHero'),v=document.getElementById('availVal'),s=document.getElementById('availSub'),t=document.getElementById('availToggle');if(avail){h.className='avail-hero on';v.className='avail-status-val on';v.textContent='Available for jobs';s.textContent='Visible on KNECT exchange · 3 jobs nearby';t.className='toggle-track on';}else{h.className='avail-hero off';v.className='avail-status-val off';v.textContent='Off duty';s.textContent='Not visible on the KNECT exchange';t.className='toggle-track';}}
+
+/* ── ROUTE PLANNER ──────────────────────────────────────────── */
+let stopCount=2;const LETTERS='ABCDEFGHIJ';
+const XI=`<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>`;
+function addStop(){if(stopCount>=8)return;const l=document.getElementById('stopList'),r=document.createElement('div');r.className='stop-row';r.id='srow-'+stopCount;r.innerHTML=`<div class="stop-index">${LETTERS[stopCount]}</div><input class="stop-input" type="text" placeholder="Stop ${LETTERS[stopCount]} postcode" id="stop-${stopCount}"><div class="stop-remove" onclick="removeStop(${stopCount})">${XI}</div>`;l.appendChild(r);stopCount++;document.getElementById('stopCount').textContent=stopCount+' stops';}
+function removeStop(n){const r=document.getElementById('srow-'+n);if(r)r.remove();stopCount--;document.getElementById('stopCount').textContent=stopCount+' stops';}
+function planRoute(){const f=document.getElementById('stop-0').value.trim(),t=document.getElementById('stop-1').value.trim();if(!f||!t){alert('Enter at least two postcodes.');return;}const mi=Math.floor(20+Math.random()*120),h=Math.floor(mi/50),m=Math.round((mi/50-h)*60/5)*5,fu=Math.round(mi*.18),p=Math.round(mi*1.85+18);document.getElementById('rMiles').textContent=mi+' mi';document.getElementById('rTime').textContent=h?h+'h '+m+'m':m+'m';document.getElementById('rFuel').textContent='£'+fu;document.getElementById('rPay').textContent='£'+p;const stops=[];for(let i=0;i<stopCount;i++){const v=document.getElementById('stop-'+i);if(v&&v.value.trim())stops.push(v.value.trim().toUpperCase());}document.getElementById('routeStops').innerHTML=stops.map((s,i)=>`<div class="route-stop-line"><div class="route-stop-dot${i===stops.length-1?' last':''}"></div><span style="font-size:.76rem;font-weight:${i===0||i===stops.length-1?700:400};color:${i===0||i===stops.length-1?'var(--text)':'var(--muted)'}">${s}</span></div>`).join('');document.getElementById('routeResult').classList.add('show');window._rs=stops;}
+function openNav(){const s=window._rs||[];if(!s.length)return;window.open('https://www.google.com/maps/dir/'+s.map(x=>encodeURIComponent(x)).join('/'),'_blank');}
+function clearRoute(){document.getElementById('stop-0').value='';document.getElementById('stop-1').value='';document.getElementById('routeResult').classList.remove('show');}
+
+/* ── QUICK QUOTE ────────────────────────────────────────────── */
+const VM={small:.75,half:.9,full:1,pallet:1.15},TM={same:1.25,next:1,economy:.78};
+function getQuote(){const f=document.getElementById('qFrom').value.trim(),t=document.getElementById('qTo').value.trim(),v=document.getElementById('qVan').value||'full',tm=document.getElementById('qTime').value||'same';if(!f||!t){alert('Enter from and to postcodes.');return;}const mi=Math.floor(15+Math.random()*200),p=Math.round((mi*1.85+18)*(VM[v]||1)*(TM[tm]||1)*1.2),d=Math.round(p*.78/1.2),fu=Math.round(mi*.18),lbl={same:'same day',next:'next day',economy:'economy 2–3d'};document.getElementById('quotePriceVal').textContent='£'+p;document.getElementById('quotePriceSub').textContent='inc. VAT · '+mi+' mi · '+lbl[tm];document.getElementById('quoteBreakdown').innerHTML='<strong>Driver pay:</strong> £'+d+'<br><strong>Est. fuel:</strong> £'+fu+'<br><strong>Net:</strong> £'+(d-fu);document.getElementById('quoteResult').classList.add('show');}
+function swapPostcodes(){const f=document.getElementById('qFrom'),t=document.getElementById('qTo');[f.value,t.value]=[t.value,f.value];}
+
+/* ── COLOUR TAGS ────────────────────────────────────────────── */
+const TAG_PRESETS=[
+  {id:'haf',   label:'HAF Job',      color:'#f18e00', bg:'rgba(241,142,0,.18)'},
+  {id:'private',label:'Private Hire', color:'#7db3f5', bg:'rgba(91,155,213,.18)'},
+  {id:'personal',label:'Personal',    color:'#a8b0b8', bg:'rgba(139,146,152,.18)'},
+  {id:'blocked',label:'Blocked',      color:'#e07068', bg:'rgba(180,72,63,.18)'},
+  {id:'other',  label:'Other',        color:'#5db87a', bg:'rgba(62,117,80,.18)'},
+];
+let tags=[...TAG_PRESETS];
+let activeTagFilter=null;
+// job→tag map (seed)
+const jobTags={7:['haf','haf'],8:['private'],10:['private']};
+
+function renderTagLegend(){
+  const el=document.getElementById('tagLegend');
+  el.innerHTML=tags.map(t=>`
+    <div class="tag-chip${activeTagFilter===t.id?' active-tag':''}" onclick="filterByTag('${t.id}')"
+      style="background:${t.bg};color:${t.color};border-color:${activeTagFilter===t.id?t.color:'transparent'}">
+      <div class="tag-chip-dot" style="background:${t.color}"></div>${t.label}
+    </div>`).join('')
+    +(activeTagFilter?`<div class="tag-chip" onclick="filterByTag(null)" style="background:var(--panel-2);color:var(--muted);border-color:var(--line-strong)">✕ Clear</div>`:'');
+}
+function filterByTag(id){activeTagFilter=activeTagFilter===id?null:id;renderTagLegend();renderCal();}
+function openTagModal(day){
+  document.getElementById('tagOptions').innerHTML=tags.map((t,i)=>`
+    <div class="tag-option${(day&&(jobTags[day]||[]).includes(t.id))?' selected':''}"
+      onclick="toggleJobTag(${day},'${t.id}',this)"
+      style="background:${t.bg}">
+      <div class="tag-option-swatch" style="background:${t.color}"></div>
+      <div class="tag-option-label">${t.label}</div>
+      <div class="tag-option-count">${countTagUsage(t.id)} jobs</div>
+    </div>`).join('');
+  document.getElementById('tagModalOverlay').style.display='flex';
+}
+function closeTagModal(){document.getElementById('tagModalOverlay').style.display='none';renderCal();}
+function toggleJobTag(day,tagId,el){
+  if(!day)return;
+  if(!jobTags[day])jobTags[day]=[];
+  const idx=jobTags[day].indexOf(tagId);
+  if(idx>-1){jobTags[day].splice(idx,1);el.classList.remove('selected');}
+  else{jobTags[day].push(tagId);el.classList.add('selected');}
+}
+function countTagUsage(tagId){return Object.values(jobTags).flat().filter(t=>t===tagId).length;}
+function addCustomTag(){
+  const name=prompt('Tag name:');if(!name)return;
+  const colors=['#c084fc','#f472b6','#34d399','#60a5fa','#fbbf24'];
+  const color=colors[tags.length%colors.length];
+  tags.push({id:'custom_'+Date.now(),label:name,color,bg:color.replace(')',', .18)').replace('rgb','rgba')});
+  renderTagLegend();openTagModal(null);
+}
+function getDayTagColors(day){
+  const t=(jobTags[day]||[]);
+  return t.map(id=>tags.find(x=>x.id===id)).filter(Boolean);
+}
+
+/* ── CALENDAR ───────────────────────────────────────────────── */
+let cY=2026,cM=6,calView='month';
+const MN=['January','February','March','April','May','June','July','August','September','October','November','December'];
+const WD=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+const CJ={2:[{route:'Nottingham → Derby',time:'09:00–10:30',done:true,pay:'£58'}],3:[{route:'Leeds → York',time:'11:00–12:00',done:true,pay:'£45'}],4:[{route:'Sheffield → Doncaster',time:'08:00–09:15',done:true,pay:'£52'}],7:[{route:'Manchester → Leeds',time:'Collected 08:30 · Delivered 10:15',done:true,pay:'£92'},{route:'Manchester → Sheffield',time:'Collected 12:00 · ETA 14:22',done:false,pay:'£95'}],8:[{route:'Birmingham → Coventry',time:'Collect 13:00',done:false,pay:'£64'}],10:[{route:'Derby → Nottingham',time:'Collect 09:30',done:false,pay:'£49'}]};
+
+function setCalView(v,btn){calView=v;document.querySelectorAll('.cal-view-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');renderCal();}
+function calShift(d){cM+=d;if(cM>11){cM=0;cY++;}if(cM<0){cM=11;cY--;}renderCal();}
+
+function renderCal(){
+  const lbl=document.getElementById('calMonthLabel');
+  const mount=document.getElementById('calViewMount');
+  const detail=document.getElementById('calDetail');
+
+  if(calView==='day'){
+    lbl.textContent='Today — Mon 7 Jul 2026';
+    detail.style.display='none';
+    mount.innerHTML=`
+      <div class="day-view">
+        <div class="day-view-head">Monday 7 July 2026 — 2 jobs scheduled</div>
+        <div class="day-slot"><div class="day-slot-time">08:00</div><div class="day-slot-content"><div class="day-job-card done-card">Manchester → Leeds · Collected 08:30 · £92</div></div></div>
+        <div class="day-slot"><div class="day-slot-time">10:15</div><div class="day-slot-content"><div class="day-job-card done-card">Delivered · £92 paid</div></div></div>
+        <div class="day-slot"><div class="day-slot-time">12:00</div><div class="day-slot-content"><div class="day-job-card transit-card">Manchester → Sheffield · En route · ETA 14:22 · £95</div></div></div>
+        <div class="day-slot"><div class="day-slot-time">15:00</div><div class="day-slot-content"><div class="day-empty-slot">Available: Nottingham → Leicester · £68 · 3 mi away</div></div></div>
+        <div class="day-slot"><div class="day-slot-time">16:30</div><div class="day-slot-content"><div class="day-empty-slot">Available: Derby → Birmingham · £84</div></div></div>
+      </div>`;
+    return;
+  }
+
+  if(calView==='week'){
+    lbl.textContent='Week of 7 Jul 2026';
+    detail.style.display='none';
+    const weekDays=['Mon 7','Tue 8','Wed 9','Thu 10','Fri 11','Sat 12','Sun 13'];
+    const weekJobs={0:[{r:'MAN→LDS',done:true},{r:'MAN→SHF',done:false}],1:[{r:'BHM→COV',done:false}],3:[{r:'DER→NOT',done:false}]};
+    mount.innerHTML=`<div class="week-grid">${weekDays.map((d,i)=>`
+      <div class="week-col">
+        <div class="week-col-head${i===0?' today-col':''}">${d}</div>
+        <div class="week-col-body">${(weekJobs[i]||[]).map(j=>`<div class="week-job-pill${j.done?' done':''}">${j.r}</div>`).join('')}</div>
+      </div>`).join('')}</div>`;
+    return;
+  }
+
+  if(calView==='quarter'){
+    lbl.textContent='Q3 2026 · Jul – Sep';
+    detail.style.display='none';
+    const months=[[2026,6],[2026,7],[2026,8]];
+    mount.innerHTML=`<div class="quarter-grid">${months.map(([y,m])=>miniMonth(y,m)).join('')}</div>`;
+    return;
+  }
+
+  // Month view
+  lbl.textContent=MN[cM]+' '+cY;
+  detail.style.display='';
+  const first=new Date(cY,cM,1).getDay(),blanks=first===0?6:first-1,days=new Date(cY,cM+1,0).getDate();
+  let cells='';
+  ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'].forEach(d=>{cells+=`<div class="cal-day-name">${d}</div>`;});
+  for(let i=0;i<blanks;i++) cells+=`<div class="cal-day empty"></div>`;
+  for(let d=1;d<=days;d++){
+    let cls='cal-day';
+    if(d===7&&cM===6&&cY===2026) cls+=' today';
+    const hasJob=CJ[d]&&(activeTagFilter?true:true);
+    if(CJ[d]){cls+=' has-jobs';if(CJ[d].every(j=>j.done))cls+=' done-day';}
+    if(d===7&&cM===6&&cY===2026) cls+=' selected';
+    const dotColors=getDayTagColors(d);
+    const dotsHtml=dotColors.length?`<div style="display:flex;gap:2px;margin-top:1px">${dotColors.slice(0,3).map(t=>`<div class="cat-dot" style="background:${t.color}"></div>`).join('')}</div>`:'';
+    cells+=`<div class="${cls}" onclick="selectDay(${d})">${d}${dotsHtml}</div>`;
+  }
+  mount.innerHTML=`<div class="cal-grid">${cells}</div>`;
+}
+
+function miniMonth(y,m){
+  const first=new Date(y,m,1).getDay(),blanks=first===0?6:first-1,days=new Date(y,m+1,0).getDate();
+  let cells=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'].map(d=>`<div class="mini-day-name">${d[0]}</div>`).join('');
+  for(let i=0;i<blanks;i++) cells+=`<div class="mini-day empty"></div>`;
+  for(let d=1;d<=days;d++){
+    let cls='mini-day';
+    if(d===7&&m===6&&y===2026) cls+=' today';
+    if(m===6&&CJ[d]){cls+=' has-jobs';if(CJ[d].every(j=>j.done))cls+=' done-day';}
+    cells+=`<div class="${cls}">${d}</div>`;
+  }
+  return `<div class="mini-month"><div class="mini-month-label">${MN[m].slice(0,3)} ${y}</div><div class="mini-cal-grid">${cells}</div></div>`;
+}
+
+function selectDay(d){
+  document.querySelectorAll('.cal-day').forEach(e=>{if(!e.classList.contains('empty'))e.classList.remove('selected');});
+  document.querySelectorAll('.cal-day').forEach(e=>{if(parseInt(e.textContent)===d&&!e.classList.contains('empty'))e.classList.add('selected');});
+  const date=new Date(cY,cM,d),jobs=CJ[d],label=WD[date.getDay()]+' '+d+' '+MN[cM];
+  const head=document.getElementById('calDetailHead'),body=document.getElementById('calDetailBody');
+  if(jobs){head.textContent=label+' — '+jobs.length+' job'+(jobs.length!==1?'s':'');body.innerHTML=jobs.map(j=>`<div class="cal-detail-job"><div class="cal-status-dot" style="background:${j.done?'#5db87a':'#7db3f5'};${!j.done?'box-shadow:0 0 0 2px rgba(125,179,245,.25)':''}"></div><div class="cal-job-info"><div class="cal-job-route">${j.route}</div><div class="cal-job-time">${j.time} · ${j.done?'Delivered':'Upcoming'}</div></div><div class="cal-job-pay">${j.pay}</div></div>`).join('');}
+  else{head.textContent=label+' — no jobs';body.innerHTML='<div class="cal-empty">Nothing booked for this day</div>';}
+}
+renderTagLegend();
+renderCal();
+
+/* ── EXPENSES ───────────────────────────────────────────────── */
+let expenses=[];
+function addExpense(){
+  const label=document.getElementById('expLabel').value.trim(),amount=parseFloat(document.getElementById('expAmount').value),type=document.getElementById('expType').value;
+  if(!label||!amount||amount<=0){alert('Enter a description and amount.');return;}
+  expenses.push({label,amount,type,id:Date.now()});
+  document.getElementById('expLabel').value='';document.getElementById('expAmount').value='';
+  renderExpenses();recalcBudget();
+}
+function removeExpense(id){expenses=expenses.filter(e=>e.id!==id);renderExpenses();recalcBudget();}
+function renderExpenses(){
+  const list=document.getElementById('expenseList');
+  if(!expenses.length){list.innerHTML='<div style="padding:.85rem .3rem;text-align:center;font-size:.8rem;color:var(--muted)">No expenses logged this week</div>';document.getElementById('expenseTotal').textContent='Total: £0';return;}
+  const total=expenses.filter(e=>e.type==='cost').reduce((s,e)=>s+e.amount,0);
+  document.getElementById('expenseTotal').textContent='Total: £'+total.toFixed(2);
+  list.innerHTML=expenses.map(e=>`
+    <div class="expense-item">
+      <div class="expense-item-label">${e.label}</div>
+      <div class="expense-item-amount ${e.type==='cost'?'cost':'income'}">${e.type==='cost'?'-':'+'} £${e.amount.toFixed(2)}</div>
+      <button class="expense-item-remove" onclick="removeExpense(${e.id})">${XI}</button>
+    </div>`).join('');
+}
+
+/* ── VAN COSTS ──────────────────────────────────────────────── */
+function recalcVanCosts(){
+  const ids=['vc-finance','vc-insurance','vc-maintenance','vc-tax','vc-breakdown','vc-other'];
+  const total=ids.reduce((s,id)=>s+(parseFloat(document.getElementById(id).value)||0),0);
+  document.getElementById('vanMonthly').textContent=total.toFixed(0);
+  document.getElementById('vanWeekly').textContent=(total/4.33).toFixed(0);
+  recalcBudget();
+}
+
+function recalcBudget(){
+  const ids=['vc-finance','vc-insurance','vc-maintenance','vc-tax','vc-breakdown','vc-other'];
+  const vanMonthly=ids.reduce((s,id)=>s+(parseFloat(document.getElementById(id).value)||0),0);
+  const vanWeekly=vanMonthly/4.33;
+  const expenseCosts=expenses.filter(e=>e.type==='cost').reduce((s,e)=>s+e.amount,0);
+  const expenseIncome=expenses.filter(e=>e.type==='income').reduce((s,e)=>s+e.amount,0);
+  const gross=617,fuel=205;
+  const net=Math.round(gross-fuel-vanWeekly-expenseCosts+expenseIncome);
+  document.getElementById('budgetNet').textContent='£'+net;
+  document.getElementById('budgetVanCosts').textContent='£'+vanWeekly.toFixed(0);
+  document.getElementById('budgetSub').textContent='gross £'+gross+' · fuel £'+fuel+' · van £'+vanWeekly.toFixed(0)+' · expenses £'+expenseCosts.toFixed(0);
+  document.getElementById('budgetAvg').textContent='£'+(net/9).toFixed(2);
+}
+
+/* ── BUDGET ─────────────────────────────────────────────────── */
+const BD={
+  week:{gross:'£617',fuel:'£205',miles:'448 mi',title:'Earnings by day — this week',bars:[{l:'Mon',v:92},{l:'Tue',v:58},{l:'Wed',v:45},{l:'Thu',v:52},{l:'Fri',v:187,hi:true},{l:'Sat',v:0},{l:'Sun',v:0}],jobs:[{r:'Manchester → Leeds',g:'£92',f:'£24',n:'£68'},{r:'Nottingham → Derby',g:'£58',f:'£14',n:'£44'},{r:'Leeds → York',g:'£45',f:'£10',n:'£35'},{r:'Sheffield → Doncaster',g:'£52',f:'£13',n:'£39'},{r:'Manchester → Sheffield ×2',g:'£190',f:'£48',n:'£142'}]},
+  month:{gross:'£2,710',fuel:'£870',miles:'1,920 mi',title:'Earnings by week — this month',bars:[{l:'Wk1',v:580},{l:'Wk2',v:490},{l:'Wk3',v:680,hi:true},{l:'Wk4',v:412}],jobs:[{r:'Week 1 total',g:'£780',f:'£200',n:'£580'},{r:'Week 2 total',g:'£650',f:'£160',n:'£490'},{r:'Week 3 total',g:'£863',f:'£183',n:'£680'},{r:'Week 4 (to date)',g:'£617',f:'£205',n:'£412'}]}
+};
+function setPeriod(p,btn){document.querySelectorAll('.period-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');const d=BD[p];document.getElementById('budgetGross').textContent=d.gross;document.getElementById('budgetFuel').textContent=d.fuel;document.getElementById('barTitle').textContent=d.title;const max=Math.max(...d.bars.map(b=>b.v),1);document.getElementById('bars').innerHTML=d.bars.map(b=>`<div class="bar-col"><div class="bar-fill${b.hi?' hi':''}" style="height:${Math.max(b.v/max*68,b.v?3:0)}px"></div><div class="bar-label">${b.l}</div></div>`).join('');document.getElementById('profitRows').innerHTML=d.jobs.map(j=>`<div class="profit-row"><span class="profit-route">${j.r}</span><span class="profit-gross">${j.g}</span><span class="profit-cost">${j.f}</span><span class="profit-net">${j.n}</span></div>`).join('');recalcBudget();}
+setPeriod('week',document.querySelector('.period-btn.active'));
+recalcVanCosts();
 </script>
 </body>
 </html>
