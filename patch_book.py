@@ -1,86 +1,22 @@
 #!/usr/bin/env python3
-import base64, json, urllib.request, urllib.error, os
+import subprocess, base64, gzip, sys
 
-REPO = "OtisAgent/haf-plna"
-GITHUB_TOKEN = os.environ["GITHUB_TOKEN"]
+PATCH_GZ_B64 = """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"""
 
-def gh(method, path, body=None):
-    url = f"https://api.github.com{path}"
-    req = urllib.request.Request(url, method=method)
-    req.add_header("Authorization", f"Bearer {GITHUB_TOKEN}")
-    req.add_header("Accept", "application/vnd.github.v3+json")
-    if body:
-        data = json.dumps(body).encode()
-        req.add_header("Content-Type", "application/json")
-        req.data = data
-    with urllib.request.urlopen(req) as r:
-        return json.loads(r.read())
+patch = gzip.decompress(base64.b64decode(PATCH_GZ_B64))
+r = subprocess.run(['git', 'apply', '-v', '-'], input=patch, capture_output=True)
+sys.stdout.write(r.stdout.decode(errors='replace'))
+sys.stderr.write(r.stderr.decode(errors='replace'))
+if r.returncode != 0:
+    print('git apply failed — exiting')
+    sys.exit(1)
 
-# ── Fetch book.html ──────────────────────────────────────────
-print("Fetching book.html...")
-res = gh("GET", f"/repos/{REPO}/contents/book.html")
-sha = res["sha"]
-content = base64.b64decode(res["content"]).decode("utf-8")
-print(f"  SHA: {sha}, size: {len(content)}")
-
-# ── Old submitBooking function ───────────────────────────────
-OLD = """function submitBooking(){
-  const first=document.getElementById('bkFirst')?.value.trim();
-  const last=document.getElementById('bkLast')?.value.trim();
-  const phone=document.getElementById('bkPhone')?.value.trim();
-  const from=document.getElementById('bkFrom')?.value.trim();
-  const to=document.getElementById('bkTo')?.value.trim();
-  if(!first||!last||!phone||!from||!to){alert('Please fill in your name, phone number, and both postcodes.');return;}
-  if(P.calendar&&!bSel){alert('Please select a date from the calendar.');return;}
-  const ref='REF-'+Math.floor(100000+Math.random()*900000);
-  document.getElementById('confirmRef').textContent=ref;
-  document.getElementById('confirmNote').textContent=P.whatsapp
-    ?'Check your WhatsApp — the driver will confirm within 1 hour.'
-    :'The driver will review and respond within 24 hours.';
-  document.getElementById('mainPage').style.display='none';
-  document.getElementById('successPage').style.display='block';
-  window.scrollTo(0,0);
-}"""
-
-# ── New submitBooking function ────────────────────────────────
-NEW = """async function submitBooking(){
-  const first=document.getElementById('bkFirst')?.value.trim();
-  const last=document.getElementById('bkLast')?.value.trim();
-  const phone=document.getElementById('bkPhone')?.value.trim();
-  const from=document.getElementById('bkFrom')?.value.trim();
-  const to=document.getElementById('bkTo')?.value.trim();
-  if(!first||!last||!phone||!from||!to){alert('Please fill in your name, phone number, and both postcodes.');return;}
-  if(P.calendar&&!bSel){alert('Please select a date from the calendar.');return;}
-  const submitBtn=document.querySelector('[onclick*="submitBooking"]');
-  if(submitBtn){submitBtn.textContent='Sending…';submitBtn.disabled=true;}
-  const ref='REF-'+Math.floor(100000+Math.random()*900000);
-  try{
-    await fetch(`${SUPA_URL}/rest/v1/plna_bookings`,{
-      method:'POST',
-      headers:{'apikey':SUPA_KEY,'Authorization':'Bearer '+SUPA_KEY,'Content-Type':'application/json','Prefer':'return=minimal'},
-      body:JSON.stringify({ref,driver_username:driverKey,customer_first:first,customer_last:last,customer_phone:phone,from_postcode:from,to_postcode:to,preferred_date:bSel||null,notes:''})
-    });
-  }catch(e){console.error('Booking save failed:',e);}
-  document.getElementById('confirmRef').textContent=ref;
-  document.getElementById('confirmNote').textContent=P.whatsapp
-    ?'Check your WhatsApp — the driver will confirm within 1 hour.'
-    :'The driver will review and respond within 24 hours.';
-  document.getElementById('mainPage').style.display='none';
-  document.getElementById('successPage').style.display='block';
-  window.scrollTo(0,0);
-}"""
-
-assert OLD in content, "ERROR: Old submitBooking not found in book.html"
-patched = content.replace(OLD, NEW, 1)
-assert patched != content, "ERROR: No change made"
-print("  Patch applied OK")
-
-# ── Push to GitHub ────────────────────────────────────────────
-encoded = base64.b64encode(patched.encode()).decode()
-print("Pushing book.html...")
-gh("PUT", f"/repos/{REPO}/contents/book.html", {
-    "message": "fix: wire submitBooking() to save real bookings to Supabase",
-    "content": encoded,
-    "sha": sha
-})
-print("Done — book.html updated.")
+subprocess.run(['git', 'config', 'user.email', 'otis@usehaf.co.uk'], check=True)
+subprocess.run(['git', 'config', 'user.name', 'Otis'], check=True)
+subprocess.run(['git', 'add', 'book.html', 'dashboard.html'], check=True)
+if subprocess.run(['git', 'diff', '--staged', '--quiet']).returncode:
+    subprocess.run(['git', 'commit', '-m', 'fix: PLNA booking system — async submit, dynamic calendar, bookings inbox'], check=True)
+    subprocess.run(['git', 'push'], check=True)
+    print('Deployed successfully!')
+else:
+    print('No changes to commit')
