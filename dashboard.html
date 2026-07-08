@@ -817,7 +817,7 @@ if(planBtn){
   else if(PLNA_PLAN==='plus'){planBtn.textContent='Upgrade to Pro — £50/mo';}
   else{planBtn.textContent='Upgrade to Plus — £10/mo';planBtn.classList.replace('btn-ghost','btn-primary');}
 }
-const _bookLink=location.origin+location.pathname.replace('dashboard.html','')+'book.html?driver='+_user;
+const _bookLink=location.origin+'/book?driver='+_user;
 const _bookRow=document.getElementById('bookingLinkRow');
 if(_bookRow){
   const cap=PLAN_CAP[PLNA_PLAN];
@@ -832,7 +832,7 @@ if(_bookRow){
           <span id="copyBtnLabel">Copy link</span>
         </button>
       </div>
-      <div style="font-size:.72rem;color:var(--orange);word-break:break-all">book.html?driver=${_user}</div>
+      <div style="font-size:.72rem;color:var(--orange);word-break:break-all">${location.origin}/book?driver=${_user}</div>
       <div style="background:rgba(241,142,0,.06);border:1px solid rgba(241,142,0,.18);border-radius:10px;padding:.65rem .85rem;">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.45rem;">
           <div style="font-size:.74rem;font-weight:600;color:var(--text)">Confirmed bookings this month</div>
@@ -854,7 +854,7 @@ if(_bookRow){
     _bookRow.innerHTML=`
       <div>
         <div class="settings-row-label">My booking link</div>
-        <div style="font-size:.72rem;color:var(--orange);margin-top:.1rem;word-break:break-all">book.html?driver=${_user}</div>
+        <div style="font-size:.72rem;color:var(--orange);margin-top:.1rem;word-break:break-all">${location.origin}/book?driver=${_user}</div>
         <div style="font-size:.7rem;color:var(--muted);margin-top:.25rem">${CONFIRMED_THIS_MONTH} of ${cap} confirmed bookings used this month · cancellations don't count</div>
       </div>
       <button class="btn btn-primary btn-sm" onclick="copyBookLink()">
@@ -865,7 +865,7 @@ if(_bookRow){
     _bookRow.innerHTML=`
       <div>
         <div class="settings-row-label">My booking link</div>
-        <div style="font-size:.72rem;color:var(--orange);margin-top:.1rem;word-break:break-all">book.html?driver=${_user}</div>
+        <div style="font-size:.72rem;color:var(--orange);margin-top:.1rem;word-break:break-all">${location.origin}/book?driver=${_user}</div>
         <div style="font-size:.7rem;color:var(--muted);margin-top:.25rem">Unlimited bookings · Pro plan · branding toggle available</div>
       </div>
       <button class="btn btn-primary btn-sm" onclick="copyBookLink()">
