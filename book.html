@@ -452,7 +452,7 @@ function calShift(d){bM+=d;if(bM>11){bM=0;bY++;}if(bM<0){bM=11;bY--;}bSel=null;r
 function pickDay(d){bSel=d;renderCal();}
 
 /* ── SUBMIT ── */
-function submitBooking(){
+async function submitBooking(){
   const first=document.getElementById('bkFirst')?.value.trim();
   const last=document.getElementById('bkLast')?.value.trim();
   const phone=document.getElementById('bkPhone')?.value.trim();
@@ -460,7 +460,16 @@ function submitBooking(){
   const to=document.getElementById('bkTo')?.value.trim();
   if(!first||!last||!phone||!from||!to){alert('Please fill in your name, phone number, and both postcodes.');return;}
   if(P.calendar&&!bSel){alert('Please select a date from the calendar.');return;}
+  const submitBtn=document.querySelector('[onclick*="submitBooking"]');
+  if(submitBtn){submitBtn.textContent='Sending…';submitBtn.disabled=true;}
   const ref='REF-'+Math.floor(100000+Math.random()*900000);
+  try{
+    await fetch(`${SUPA_URL}/rest/v1/plna_bookings`,{
+      method:'POST',
+      headers:{'apikey':SUPA_KEY,'Authorization':'Bearer '+SUPA_KEY,'Content-Type':'application/json','Prefer':'return=minimal'},
+      body:JSON.stringify({ref,driver_username:driverKey,customer_first:first,customer_last:last,customer_phone:phone,from_postcode:from,to_postcode:to,preferred_date:bSel||null,notes:''})
+    });
+  }catch(e){console.error('Booking save failed:',e);}
   document.getElementById('confirmRef').textContent=ref;
   document.getElementById('confirmNote').textContent=P.whatsapp
     ?'Check your WhatsApp — the driver will confirm within 1 hour.'
