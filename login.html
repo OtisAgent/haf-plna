@@ -229,23 +229,36 @@ function previewUsername(){
   else{p.textContent='Enter your username above to confirm it';}
 }
 
+/* ── SUPABASE ── */
+const SUPA_URL='https://ggkpqqrtxtlafdkxcaqg.supabase.co';
+const SUPA_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imdna3BxcXJ0eHRsYWZka3hjYXFnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIxOTM2NjAsImV4cCI6MjA5Nzc2OTY2MH0.hB70KOYZu4dshwhsrxF_dFyBn0n72gStWTwxYGsLdgY';
+async function sha256(str){const buf=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(str));return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');}
+
 /* ── SIGN IN ── */
-// Seed credentials — any password works with JW012390 in this preview
-function doLogin(){
+async function doLogin(){
   const u=document.getElementById('loginUser').value.trim().toUpperCase();
   const p=document.getElementById('loginPass').value;
   const err=document.getElementById('loginError');
   if(!u||!p){err.textContent='Please enter your username and password.';err.classList.add('show');return;}
-  // Seed: accept JW012390 or any 8+ char username + any non-empty password
   if(u.length<6){err.textContent='Username format: 2 initials + last 4 of phone + last 2 of birth year (e.g. JW012390)';err.classList.add('show');return;}
   err.classList.remove('show');
-  localStorage.setItem('plna-user',u);
-  localStorage.setItem('plna-auth','1');
-  window.location.href='dashboard.html';
+  const btn=document.querySelector('#view-login .btn-full');
+  btn.textContent='Signing in…';btn.disabled=true;
+  try{
+    const hash=await sha256(p);
+    const res=await fetch(`${SUPA_URL}/rest/v1/plna_drivers?haf_username=eq.${encodeURIComponent(u)}&password_hash=eq.${encodeURIComponent(hash)}&select=*`,{headers:{'apikey':SUPA_KEY,'Authorization':'Bearer '+SUPA_KEY}});
+    const data=await res.json();
+    if(!Array.isArray(data)||!data.length){err.textContent='Incorrect username or password. Try again.';err.classList.add('show');btn.textContent='Sign in';btn.disabled=false;return;}
+    const driver=data[0];
+    localStorage.setItem('plna-user',driver.haf_username);
+    localStorage.setItem('plna-profile',JSON.stringify(driver));
+    localStorage.setItem('plna-auth','1');
+    window.location.href='dashboard.html';
+  }catch(e){err.textContent='Connection error. Please try again.';err.classList.add('show');btn.textContent='Sign in';btn.disabled=false;}
 }
 
 /* ── REGISTER ── */
-function doRegister(){
+async function doRegister(){
   const name=document.getElementById('regName').value.trim();
   const phone=document.getElementById('regPhone').value.trim();
   const dob=document.getElementById('regDob').value;
@@ -256,9 +269,20 @@ function doRegister(){
   if(pass.length<8){err.textContent='Password must be at least 8 characters.';err.classList.add('show');return;}
   if(clever.length<6){err.textContent='Enter your username from CleverPay.';err.classList.add('show');return;}
   err.classList.remove('show');
-  localStorage.setItem('plna-user',clever);
-  localStorage.setItem('plna-auth','1');
-  window.location.href='dashboard.html';
+  const btn=document.querySelector('#view-register .btn-full');
+  btn.textContent='Creating account…';btn.disabled=true;
+  try{
+    const hash=await sha256(pass);
+    const parts=name.trim().split(/\s+/);
+    const initials=(parts[0][0]+(parts.length>1?parts[parts.length-1][0]:parts[0][1]||'?')).toUpperCase();
+    const res=await fetch(`${SUPA_URL}/rest/v1/plna_drivers`,{method:'POST',headers:{'apikey':SUPA_KEY,'Authorization':'Bearer '+SUPA_KEY,'Content-Type':'application/json','Prefer':'return=representation'},body:JSON.stringify({haf_username:clever,full_name:name,initials:initials,city:'',plan:'basic',bio:'',password_hash:hash,has_whatsapp:false,confirmed_this_month:0,cancelled_this_month:0})});
+    if(!res.ok){const e=await res.json();err.textContent=e.code==='23505'?'That username is already registered.':'Registration failed. Please try again.';err.classList.add('show');btn.textContent='Create my account';btn.disabled=false;return;}
+    const driver=(await res.json())[0];
+    localStorage.setItem('plna-user',driver.haf_username);
+    localStorage.setItem('plna-profile',JSON.stringify(driver));
+    localStorage.setItem('plna-auth','1');
+    window.location.href='dashboard.html';
+  }catch(e){err.textContent='Connection error. Please try again.';err.classList.add('show');btn.textContent='Create my account';btn.disabled=false;}
 }
 
 /* ── FORGOT ── */

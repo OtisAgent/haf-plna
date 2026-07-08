@@ -437,16 +437,16 @@ option{background:var(--panel);}
     <button class="icon-btn" id="themeBtn" onclick="toggleTheme()" title="Toggle day / night">
       <svg id="themeIcon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
     </button>
-    <div class="avatar">JW</div>
+    <div class="avatar" id="topbarAvatar">JW</div>
   </div>
 </header>
 
 <!-- STATUS STRIP -->
 <div class="status-strip">
-  <span class="strip-name">James Wilson</span>
+  <span class="strip-name" id="stripName">James Wilson</span>
   <span class="sep">·</span><span class="chip chip-delivered">Clever Checked</span>
   <span class="sep">·</span><span class="chip chip-assigned">Full Van</span>
-  <span class="sep">·</span><span class="chip chip-pending">PLNA Plus</span>
+  <span class="sep">·</span><span class="chip chip-pending" id="planChip">PLNA Plus</span>
   <span class="sep">·</span><span style="font-size:.74rem;color:var(--muted)">Mon 7 Jul 2026</span>
 </div>
 
@@ -800,7 +800,7 @@ option{background:var(--panel);}
 <script>
 /* ── AUTH GUARD ─────────────────────────────────────────────── */
 if(localStorage.getItem('plna-auth')!=='1') window.location.href='login.html';
-function signOut(){localStorage.removeItem('plna-auth');localStorage.removeItem('plna-user');window.location.href='login.html';}
+function signOut(){localStorage.removeItem('plna-auth');localStorage.removeItem('plna-user');localStorage.removeItem('plna-profile');window.location.href='login.html';}
 const _user=localStorage.getItem('plna-user')||'JW012390';
 /* ── PLAN + BOOKING LINK ─────────────────────────────────────── */
 // 'basic' | 'plus' | 'pro'  — in production this comes from CleverPay/Supabase

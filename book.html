@@ -186,27 +186,9 @@ document.documentElement.dataset.theme=saved;
 document.getElementById('themeIcon').innerHTML=saved==='dark'?MOON:SUN;
 function toggleTheme(){const n=document.documentElement.dataset.theme==='dark'?'light':'dark';document.documentElement.dataset.theme=n;localStorage.setItem('plna-theme',n);document.getElementById('themeIcon').innerHTML=n==='dark'?MOON:SUN;}
 
-/* ── DRIVER REGISTRY (seed — production fetches from Supabase) ── */
-const DRIVERS={
-  'JW012390':{name:'James Wilson',initials:'JW',city:'Manchester',plan:'plus',
-    bio:'Full-van driver based in Manchester. Same-day and next-day delivery across the North West and Midlands.',
-    confirmedThisMonth:3, cancelledThisMonth:1},
-  'BF990112':{name:'Ben Fletcher',initials:'BF',city:'Birmingham',plan:'pro',
-    bio:'Pro courier — pallet runs, multi-stop routes, man & van. Available 7 days.',
-    confirmedThisMonth:28, cancelledThisMonth:4, pageViews:94, convRate:71},
-  'LF010190':{name:'Laura Finch',initials:'LF',city:'Leeds',plan:'basic',
-    bio:'',
-    confirmedThisMonth:7, cancelledThisMonth:2},
-  'DEMO0000':{name:'Demo (Basic)',initials:'DB',city:'London',plan:'basic',
-    bio:'', confirmedThisMonth:10, cancelledThisMonth:0},
-};
-
-const params=new URLSearchParams(location.search);
-const driverKey=params.get('driver')||'JW012390';
-const D=DRIVERS[driverKey]||{name:driverKey,initials:driverKey.slice(0,2),city:'',plan:'plus',confirmedThisMonth:0,cancelledThisMonth:0};
-
-document.getElementById('confirmDriverName').textContent=D.name;
-document.title='Book '+D.name+' — HAF PLNA';
+/* ── SUPABASE ── */
+const SUPA_URL='https://ggkpqqrtxtlafdkxcaqg.supabase.co';
+const SUPA_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imdna3BxcXJ0eHRsYWZka3hjYXFnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIxOTM2NjAsImV4cCI6MjA5Nzc2OTY2MH0.hB70KOYZu4dshwhsrxF_dFyBn0n72gStWTwxYGsLdgY';
 
 /* ── PLAN CONFIG ── */
 const PLANS={
@@ -214,7 +196,30 @@ const PLANS={
   plus: {label:'PLNA Plus',chipCls:'chip-orange',cap:50,services:4,calendar:true,bio:true,analytics:false,whatsapp:true,brandable:false},
   pro:  {label:'PLNA Pro', chipCls:'chip-ok',  cap:null,services:4,calendar:true,bio:true,analytics:true,whatsapp:true,brandable:true},
 };
-const P=PLANS[D.plan]||PLANS.basic;
+
+const params=new URLSearchParams(location.search);
+const driverKey=(params.get('driver')||'JW012390').toUpperCase();
+
+/* ── LOAD DRIVER FROM SUPABASE, THEN BUILD PAGE ── */
+let D,P;
+document.getElementById('mainPage').innerHTML='<div style="padding:3rem 1rem;text-align:center;color:var(--muted);font-size:.88rem">Loading driver profile…</div>';
+fetch(`${SUPA_URL}/rest/v1/plna_drivers?haf_username=eq.${encodeURIComponent(driverKey)}&select=*`,{headers:{'apikey':SUPA_KEY,'Authorization':'Bearer '+SUPA_KEY}})
+  .then(r=>r.json())
+  .then(data=>{
+    if(!Array.isArray(data)||!data.length){
+      document.getElementById('mainPage').innerHTML='<div style="padding:3rem 1rem;text-align:center"><div style="font-size:1.1rem;font-weight:700;color:var(--text);margin-bottom:.5rem">Driver not found</div><p style="font-size:.84rem;color:var(--muted)">This booking link may be incorrect or the driver is not yet active.</p><a href="https://usehaf.co.uk" style="display:inline-block;margin-top:1.25rem;font-size:.82rem;font-weight:600;color:var(--orange)">Find a HAF driver →</a></div>';
+      return;
+    }
+    const row=data[0];
+    D={name:row.full_name,initials:row.initials,city:row.city,plan:row.plan,bio:row.bio,whatsapp:row.has_whatsapp,confirmedThisMonth:row.confirmed_this_month,cancelledThisMonth:row.cancelled_this_month,pageViews:row.page_views,convRate:row.conv_rate};
+    P=PLANS[D.plan]||PLANS.basic;
+    document.getElementById('confirmDriverName').textContent=D.name;
+    document.title='Book '+D.name+' — HAF PLNA';
+    buildPage();
+  })
+  .catch(()=>{
+    document.getElementById('mainPage').innerHTML='<div style="padding:3rem 1rem;text-align:center;color:var(--muted);font-size:.88rem">Could not load driver profile. Please try again.</div>';
+  });
 
 /* ── CAP CHECK ── */
 // Cancelled bookings don't count — only confirmed against the cap
@@ -465,7 +470,6 @@ function submitBooking(){
   window.scrollTo(0,0);
 }
 
-buildPage();
 </script>
 </body>
 </html>
